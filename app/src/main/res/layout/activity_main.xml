@@ -4,78 +4,96 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".ui.main.MainActivity">
 
     <!-- 1. 顶部应用栏容器 (这个和 Toolbar 滚动相关，无法用 LinearLayout 替代) -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ededed">
+        android:fitsSystemWindows="true">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:contentInsetStart="0dp"
-            app:contentInsetEnd="0dp">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
-
-                <!-- 左侧部分 -->
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/toolbar_avatar"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/myhead" />
-
-                <TextView
-                    android:id="@+id/toolbar_nickname"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="K."
-                    android:textSize="18sp"
-                    android:textStyle="normal" />
-
-                <!-- 右侧部分 -->
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/toolbar_sync_switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="云同步"
-                    android:textColor="@android:color/white"/>
-
-            </LinearLayout>
-
-        </com.google.android.material.appbar.MaterialToolbar>
-
-        <LinearLayout
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:orientation="vertical"
-            app:layout_scrollFlags="scroll|enterAlways">
+            android:background="@color/colorPrimary"
+            app:contentScrim="@color/colorPrimary"
+            app:expandedTitleGravity="top"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <EditText
-                android:id="@+id/search_edit_text"
+
+            <LinearLayout
+                android:id="@+id/search_LinearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_search_bar"
-                android:drawableStart="@android:drawable/ic_menu_search"
-                android:drawablePadding="8dp"
-                android:hint="搜索昵称或消息内容..."
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:padding="10dp" />
-        </LinearLayout>
+                android:layout_marginTop="?attr/actionBarSize"
+                android:background="#ededed"
+                android:orientation="vertical"
+                android:padding="16dp">
 
+                <EditText
+                    android:id="@+id/search_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_search_bar"
+                    android:drawableStart="@android:drawable/ic_menu_search"
+                    android:drawablePadding="8dp"
+                    android:hint="搜索昵称或消息内容..."
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:padding="10dp" />
+            </LinearLayout>
+
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:contentInsetEnd="0dp"
+                app:contentInsetStart="0dp"
+                app:layout_collapseMode="pin">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp">
+
+                    <!-- 左侧部分 -->
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/toolbar_avatar"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/myhead" />
+
+                    <TextView
+                        android:id="@+id/toolbar_nickname"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:text="K."
+                        android:textSize="18sp"
+                        android:textStyle="normal" />
+
+                    <!-- 右侧部分 -->
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/toolbar_sync_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="云同步"
+                        android:textColor="@android:color/white" />
+
+                </LinearLayout>
+
+            </androidx.appcompat.widget.Toolbar>
+
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
+
 
     <!-- 4. 主要内容区域 (这个也无法替代，它负责通知 AppBarLayout 何时滚动) -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -91,7 +109,7 @@
             android:clipToPadding="false"
             android:paddingBottom="16dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_message"/>
+            tools:listitem="@layout/item_message" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
