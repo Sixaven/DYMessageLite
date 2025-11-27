@@ -35,7 +35,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
     }
 }
@@ -52,4 +52,15 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
     implementation("de.hdodenhof:circleimageview:3.1.0")
+
+    implementation("io.github.scwang90:refresh-layout-kernel:3.0.0-alpha")
+    implementation("io.github.scwang90:refresh-header-classics:3.0.0-alpha")
+    implementation("io.github.scwang90:refresh-header-radar:3.0.0-alpha")
+    implementation("io.github.scwang90:refresh-header-falsify:3.0.0-alpha")
+    implementation("io.github.scwang90:refresh-header-material:3.0.0-alpha")
+    implementation("io.github.scwang90:refresh-header-two-level:3.0.0-alpha")
+    implementation("io.github.scwang90:refresh-footer-ball:3.0.0-alpha")
+    implementation("io.github.scwang90:refresh-footer-classics:3.0.0-alpha")
+
+    implementation("com.google.code.gson:gson:2.10.1")
 }
