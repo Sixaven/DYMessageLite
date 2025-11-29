@@ -13,6 +13,14 @@ import com.example.dymessagelite.databinding.ActivityMessageDetailBinding
 import kotlinx.coroutines.selects.whileSelect
 import java.lang.Exception
 
+
+interface MessageDetailView{
+    fun displayChatList()
+
+}
+
+
+
 class MessageDetailActivity : AppCompatActivity(),View.OnClickListener {
     private lateinit var binding: ActivityMessageDetailBinding
 

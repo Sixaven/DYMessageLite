@@ -45,6 +45,10 @@ class MainActivity : AppCompatActivity() , Observer<List<MegItem>>{
         initMegList()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        megRepository.removeObserver(this)
+    }
     private fun initLateVal(dataSource: MegLocalDataSource) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         megAdapter = MegListAdapter{ item ->
@@ -123,4 +127,8 @@ class MainActivity : AppCompatActivity() , Observer<List<MegItem>>{
             binding.smartRefreshLayout.finishLoadMore()
         }
     }
+}
+
+interface MessageDetailView{
+
 }
