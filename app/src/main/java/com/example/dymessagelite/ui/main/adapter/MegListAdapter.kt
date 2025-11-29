@@ -1,6 +1,5 @@
 package com.example.dymessagelite.ui.main.adapter
 
-import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,15 +9,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.dymessagelite.data.model.MegItem
 import com.example.dymessagelite.databinding.ItemMessageBinding
 
-class MegListAdapter : ListAdapter<MegItem, MegListAdapter.MegViewHolder>(MegItemDiffCallback()){
+class MegListAdapter (private val onItemClick: (MegItem) -> Unit)
+    : ListAdapter<MegItem, MegListAdapter.MegViewHolder>(MegItemDiffCallback()){
 
     inner class MegViewHolder(val binding: ItemMessageBinding): RecyclerView.ViewHolder(binding.root){
+        init {
+            itemView.setOnClickListener {
+                val position = bindingAdapterPosition;
+                if(position != RecyclerView.NO_POSITION){
+                    val item = getItem(position);
+                    onItemClick(item)
+                }
+            }
+        }
         fun bind(item: MegItem) {
 
             binding.tvNickname.text = item.name
-
             binding.tvSummary.text = item.summary
-
             binding.tvTime.text = item.time
 
             // 4. 根据未读数，控制角标的显示和内容
