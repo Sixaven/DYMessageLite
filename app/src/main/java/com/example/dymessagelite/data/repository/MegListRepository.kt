@@ -5,13 +5,13 @@ import android.os.Looper
 import com.example.dymessagelite.common.observer.EventType
 import com.example.dymessagelite.common.observer.Observer
 import com.example.dymessagelite.common.observer.Subject
-import com.example.dymessagelite.data.datasource.MegLocalDataSource
+import com.example.dymessagelite.data.datasource.json.MegLocalDataSource
 import com.example.dymessagelite.data.model.MegItem
 
 import kotlin.concurrent.thread
 import kotlin.math.min
 
-class MegRepository(private val localDataSource: MegLocalDataSource): Subject<List<MegItem>>{
+class MegListRepository(private val localDataSource: MegLocalDataSource): Subject<List<MegItem>>{
 
     private val mainHandler = Handler(Looper.getMainLooper())
     private var allMessages: List<MegItem>? = null
@@ -26,7 +26,7 @@ class MegRepository(private val localDataSource: MegLocalDataSource): Subject<Li
             val resMessage = allMessages;
             if (resMessage.isNullOrEmpty()) {
                 mainHandler.post {
-                    notifyObservers(emptyList(), EventType.DEFAULT)
+                    notifyObservers(emptyList(), EventType.LOAD_IS_EMPTY)
                 }
                 return@thread
             }
@@ -34,14 +34,14 @@ class MegRepository(private val localDataSource: MegLocalDataSource): Subject<Li
             val startItemIndex = (page - 1) * pageSize;
             if (startItemIndex >= resMessage.size) {
                 mainHandler.post {
-                    notifyObservers(emptyList(),EventType.DEFAULT)
+                    notifyObservers(emptyList(),EventType.LOAD_IS_EMPTY)
                 }
                 return@thread
             }
             val endItemIndex = min(startItemIndex + pageSize, resMessage.size)
             val subList = resMessage.subList(startItemIndex, endItemIndex)
             mainHandler.post {
-                notifyObservers(subList,EventType.DEFAULT)
+                notifyObservers(subList,EventType.LOAD_OR_GET_MESSAGE)
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.example.dymessagelite.data.datasource.room
+package com.example.dymessagelite.data.datasource.dao
 
 import androidx.room.Dao
 import androidx.room.Insert

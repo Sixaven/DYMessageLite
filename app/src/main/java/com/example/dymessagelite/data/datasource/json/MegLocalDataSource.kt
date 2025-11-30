@@ -1,4 +1,4 @@
-package com.example.dymessagelite.data.datasource
+package com.example.dymessagelite.data.datasource.json
 
 import android.content.Context
 import com.example.dymessagelite.data.model.MegItem

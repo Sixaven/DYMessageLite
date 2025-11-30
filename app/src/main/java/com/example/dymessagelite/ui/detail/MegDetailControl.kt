@@ -6,7 +6,7 @@ import com.example.dymessagelite.data.model.ChatEntity
 import com.example.dymessagelite.data.model.MegDetailCell
 import com.example.dymessagelite.data.repository.ChatRepository
 
-class MessageDetailControl(
+class MegDetailControl(
     private val senderId: String,
     private val chatRep: ChatRepository,
     private val view: MessageDetailView
@@ -28,13 +28,13 @@ class MessageDetailControl(
 
     override fun update(data: List<MegDetailCell>, eventType: EventType) {
         when(eventType){
-            EventType.UPDATE_All_MESSAGE -> {
+            EventType.UPDATE_ALL_CHAT -> {
                 view.displayChatList(data)
             }
-            EventType.NEW_MESSAGE_SEND -> {
+            EventType.NEW_CHAT_SEND -> {
                 view.displaySendMeg(data)
             }
-            EventType.DEFAULT -> {
+            else -> {
 
             }
         }

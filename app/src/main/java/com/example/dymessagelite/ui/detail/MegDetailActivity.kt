@@ -2,21 +2,14 @@ package com.example.dymessagelite.ui.detail
 
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dymessagelite.R
-import com.example.dymessagelite.data.datasource.room.ChatDao
-import com.example.dymessagelite.data.datasource.room.ChatDatabase
+import com.example.dymessagelite.data.datasource.database.ChatDatabase
 import com.example.dymessagelite.data.model.MegDetailCell
 import com.example.dymessagelite.data.repository.ChatRepository
 import com.example.dymessagelite.databinding.ActivityMessageDetailBinding
 import com.example.dymessagelite.ui.detail.adapter.MegDetailAdapter
-import kotlinx.coroutines.selects.whileSelect
 import java.lang.Exception
 
 
@@ -30,7 +23,7 @@ class MessageDetailActivity : AppCompatActivity(),View.OnClickListener, MessageD
     private lateinit var binding: ActivityMessageDetailBinding
     private lateinit var chatRepository: ChatRepository
     private lateinit var megDetailAdapter: MegDetailAdapter
-    private lateinit var megDetailControl: MessageDetailControl
+    private lateinit var megDetailControl: MegDetailControl
 
     private lateinit var senderId: String
 
@@ -80,7 +73,7 @@ class MessageDetailActivity : AppCompatActivity(),View.OnClickListener, MessageD
         chatRepository = ChatRepository(chatDao)
     }
     fun initControl(){
-        megDetailControl = MessageDetailControl(senderId,chatRepository,this);
+        megDetailControl = MegDetailControl(senderId,chatRepository,this);
     }
     fun initToolBar(){
         binding.toolbarDetail.setNavigationOnClickListener {

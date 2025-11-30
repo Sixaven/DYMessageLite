@@ -5,7 +5,7 @@ import android.os.Looper
 import com.example.dymessagelite.common.observer.EventType
 import com.example.dymessagelite.common.observer.Observer
 import com.example.dymessagelite.common.observer.Subject
-import com.example.dymessagelite.data.datasource.room.ChatDao
+import com.example.dymessagelite.data.datasource.dao.ChatDao
 import com.example.dymessagelite.data.model.ChatEntity
 import com.example.dymessagelite.data.model.MegDetailCell
 import kotlin.concurrent.thread
@@ -33,7 +33,7 @@ class ChatRepository(private val chatDao: ChatDao) : Subject<List<MegDetailCell>
             val res = chatDao.getChatList(senderId)
             val chatList = res.toMegDetailCellList()
             mainHandler.post {
-                notifyObservers(chatList, EventType.UPDATE_All_MESSAGE)
+                notifyObservers(chatList, EventType.UPDATE_ALL_CHAT)
             }
         }
     }
@@ -44,11 +44,9 @@ class ChatRepository(private val chatDao: ChatDao) : Subject<List<MegDetailCell>
             val chat = meg.toMegDetailCell()
             val chatList = listOf(chat)
             mainHandler.post {
-                notifyObservers(chatList, EventType.NEW_MESSAGE_SEND)
+                notifyObservers(chatList, EventType.NEW_CHAT_SEND)
             }
         }
-
-
     }
 
     override fun addObserver(observer: Observer<List<MegDetailCell>>) {
