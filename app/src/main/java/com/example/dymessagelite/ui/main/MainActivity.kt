@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.dymessagelite.common.observer.EventType
 import com.example.dymessagelite.common.observer.Observer
 import com.example.dymessagelite.common.util.dpToPx
 import com.example.dymessagelite.data.datasource.MegLocalDataSource
@@ -114,7 +115,7 @@ class MainActivity : AppCompatActivity() , Observer<List<MegItem>>{
         binding.searchLinearLayout.setPadding(leftPadding,actionBarHeight+16.dpToPx(),rightPadding,16.dpToPx())
     }
 
-    override fun update(data: List<MegItem>) {
+    override fun update(data: List<MegItem>,eventType: EventType) {
         if (data.isEmpty()) {
             isLastPage = true;
             isLoading = false;

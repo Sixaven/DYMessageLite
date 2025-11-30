@@ -91,7 +91,6 @@
                 android:layout_marginStart="8dp"
                 android:text="发送"
                 android:layout_gravity="bottom"
-
                 android:padding="0dp"/>
         </LinearLayout>
 

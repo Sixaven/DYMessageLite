@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -41,6 +42,7 @@ android {
 }
 
 dependencies {
+    val room_version = "2.8.4"
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -63,4 +65,9 @@ dependencies {
     implementation("io.github.scwang90:refresh-footer-classics:3.0.0-alpha")
 
     implementation("com.google.code.gson:gson:2.10.1")
+
+
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:${room_version}")
+    ksp("androidx.room:room-compiler:$room_version")
 }
