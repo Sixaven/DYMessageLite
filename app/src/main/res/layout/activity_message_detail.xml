@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?><!-- 文件路径: res/layout/activity_message_detail.xml -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.detail.MessageDetailActivity"
+        android:background="@color/colorPrimary"
+
+        android:fitsSystemWindows="true">
+
+        <!-- 1. 顶部 Toolbar 区域 (固定在顶部) -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/colorPrimary">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar_detail"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/arrow_back"
+                app:contentInsetStartWithNavigation="0dp">
+
+                <!-- Toolbar 内部的自定义视图 -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/iv_detail_avatar"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
+                        tools:src="@drawable/myhead" />
+
+                    <TextView
+                        android:id="@+id/tv_detail_nickname"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        tools:text="好友昵称" />
+                </LinearLayout>
+
+            </androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- 3. 底部输入框区域 (固定在底部) -->
+        <LinearLayout
+            android:id="@+id/layout_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="#F7F7F7"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <EditText
+                android:id="@+id/et_input_message"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_edit_bar"
+                android:hint="发送消息..."
+                android:inputType="textMultiLine"
+                android:maxHeight="100dp"
+                android:padding="10dp"
+                android:textColor="@color/black"
+                android:maxLines="5"/>
+
+            <Button
+                android:id="@+id/btn_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="发送"
+                android:layout_gravity="bottom"
+                android:padding="0dp"/>
+        </LinearLayout>
+
+
+        <!-- 2. 中间的内容区域 (可滚动的聊天记录列表) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_chat"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#EDEDED"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@id/layout_input"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+

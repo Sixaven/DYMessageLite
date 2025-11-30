@@ -1,24 +1,30 @@
 package com.example.dymessagelite.ui.main
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.ViewGroup
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.dymessagelite.common.observer.EventType
+import com.example.dymessagelite.common.observer.Observer
+import com.example.dymessagelite.common.util.dpToPx
 import com.example.dymessagelite.data.datasource.MegLocalDataSource
 
 import com.example.dymessagelite.data.model.MegItem
 import com.example.dymessagelite.data.repository.MegRepository
 import com.example.dymessagelite.databinding.ActivityMainBinding
+import com.example.dymessagelite.ui.detail.MessageDetailActivity
 import com.example.dymessagelite.ui.main.adapter.MegListAdapter
+import com.scwang.smart.refresh.layout.api.RefreshLayout
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() , Observer<List<MegItem>>{
     private lateinit var binding: ActivityMainBinding
     private lateinit var megAdapter: MegListAdapter
     private lateinit var megRepository: MegRepository
-    private var statusBarHeight = 0
-
     private var curPage = 1;
     private var pageSize = 20;
     private var isLoading = false;
@@ -30,19 +36,33 @@ class MainActivity : AppCompatActivity() {
         initLateVal(dataSource = MegLocalDataSource(this))
 
         setContentView(binding.root)
-        //增加搜索栏布局的外边距
-        statusBarHeight = getStatusBarHeight();
-        setLinearLayoutMarginTop(statusBarHeight)
 
         initRecyclerView()
-        initMegList()
         setupRefreshAndLoadMore()
+        setSearchBarPadding()
+
+        registerObserver()
+
+        initMegList()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        megRepository.removeObserver(this)
+    }
     private fun initLateVal(dataSource: MegLocalDataSource) {
         binding = ActivityMainBinding.inflate(layoutInflater)
-        megAdapter = MegListAdapter()
+        megAdapter = MegListAdapter{ item ->
+            val intent = Intent(this, MessageDetailActivity::class.java)
+            intent.putExtra("nickname",item.name)
+            intent.putExtra("headImage",item.headId)
+            startActivity(intent)
+        }
         megRepository = MegRepository(dataSource)
+    }
+
+    private fun registerObserver() {
+        megRepository.addObserver(this)
     }
 
     private fun setupRefreshAndLoadMore(){
@@ -53,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.smartRefreshLayout.setOnLoadMoreListener { refreshLayout ->
-            loadMoreMeg()
+            loadMoreMeg(refreshLayout)
         }
     }
     private fun initRecyclerView() {
@@ -63,60 +83,53 @@ class MainActivity : AppCompatActivity() {
             adapter = megAdapter;
         }
     }
-
     private fun initMegList() {
         isLoading = true;
         isLastPage = false;
         curPage = 1;
 
-        megRepository.fetchMeg(curPage, pageSize) { resMeg ->
-            megAdapter.submitList(resMeg)
-            isLoading = false;
-        }
+        megRepository.fetchMeg(curPage, pageSize)
     }
 
-    private fun loadMoreMeg() {
+    private fun loadMoreMeg(refreshLayout: RefreshLayout) {
         if (isLoading) return
 
         curPage++;
         isLoading = true;
 
-        megRepository.fetchMeg(curPage, pageSize) { resMeg ->
-            if (resMeg.isEmpty()) {
-                isLastPage = true;
-                isLoading = false;
-                binding.smartRefreshLayout.finishLoadMoreWithNoMoreData()
-            } else {
-                val curMegList = megAdapter.currentList.toMutableList()
-                curMegList.addAll(resMeg)
-                megAdapter.submitList(curMegList)
-                isLoading = false;
-                binding.smartRefreshLayout.finishLoadMore()
-            }
-
-        }
+        megRepository.fetchMeg(curPage, pageSize)
     }
 
-    private fun getStatusBarHeight(): Int {
-        var result = 0
-        // 获取系统资源的标识符，"status_bar_height" 是系统定义的名字
-        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-        if (resourceId > 0) {
-            // 如果找到了这个资源，就获取它的尺寸值（像素）
-            result = resources.getDimensionPixelSize(resourceId)
+
+    private fun setSearchBarPadding() {
+
+        val tv = TypedValue()
+        var actionBarHeight = 0
+        if (this.theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            actionBarHeight =  TypedValue.complexToDimensionPixelSize(tv.data, this.resources.displayMetrics)
         }
-        return result
-    }
-
-    private fun setLinearLayoutMarginTop(topMargin: Int) {
-        // a. 获取 Toolbar 的现有布局参数 (LayoutParams)
-        // 因为 Toolbar 在 CollapsingToolbarLayout 中，所以它的 LayoutParams 类型是 CollapsingToolbarLayout.LayoutParams
-        val params = binding.searchLinearLayout.layoutParams as ViewGroup.MarginLayoutParams
-
-        // b. 修改布局参数的上边距
-        params.topMargin += topMargin
+        val leftPadding = binding.searchLinearLayout.paddingLeft
+        val rightPadding = binding.searchLinearLayout.paddingRight
 
         // c. 将修改后的布局参数重新设置给 Toolbar
-        binding.searchLinearLayout.layoutParams = params
+        binding.searchLinearLayout.setPadding(leftPadding,actionBarHeight+16.dpToPx(),rightPadding,16.dpToPx())
     }
+
+    override fun update(data: List<MegItem>,eventType: EventType) {
+        if (data.isEmpty()) {
+            isLastPage = true;
+            isLoading = false;
+            binding.smartRefreshLayout.finishLoadMoreWithNoMoreData()
+        } else {
+            val curMegList = megAdapter.currentList.toMutableList()
+            curMegList.addAll(data)
+            megAdapter.submitList(curMegList)
+            isLoading = false;
+            binding.smartRefreshLayout.finishLoadMore()
+        }
+    }
+}
+
+interface MessageDetailView{
+
 }
