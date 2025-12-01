@@ -28,9 +28,11 @@
         android:padding="12dp"
         android:textColor="@android:color/white"
         android:textSize="16sp"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/iv_my_avatar"
         app:layout_constraintTop_toTopOf="@id/iv_my_avatar"
         app:layout_constraintWidth_default="wrap"
-        tools:text="这是我自" />
+        tools:text="这是我自这" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

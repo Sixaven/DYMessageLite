@@ -31,10 +31,11 @@
         android:padding="12dp"
         android:textColor="@android:color/black"
         android:textSize="16sp"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_other_avatar"
         app:layout_constraintTop_toTopOf="@id/iv_other_avatar"
         app:layout_constraintWidth_default="wrap"
-        tools:text="这是对方发送的一条消息，可能会很长很长很长很长很长。" />
+        tools:text="这是对" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,8 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dymessagelite.common.util.dpToPx
-import com.example.dymessagelite.data.datasource.json.MegLocalDataSource
-
+import com.example.dymessagelite.data.datasource.database.ChatDatabase
 import com.example.dymessagelite.data.model.MegItem
 import com.example.dymessagelite.data.repository.MegListRepository
 import com.example.dymessagelite.databinding.ActivityMainBinding
@@ -43,9 +42,15 @@ class MainActivity : AppCompatActivity() , MessageListView{
         megControl.onStart()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        megControl.onStop()
+    }
+
     private fun initControl() {
-        val dataSource = MegLocalDataSource(this)
-        val megListRepository = MegListRepository(dataSource)
+        val database = ChatDatabase.getDatabase(this)
+        val megDao = database.megDao()
+        val megListRepository = MegListRepository(megDao)
         megControl = MegListControl(megListRepository,this)
     }
     private fun setupRefreshAndLoadMore(){

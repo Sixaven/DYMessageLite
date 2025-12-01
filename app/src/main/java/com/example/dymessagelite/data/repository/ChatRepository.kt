@@ -8,6 +8,10 @@ import com.example.dymessagelite.common.observer.Subject
 import com.example.dymessagelite.data.datasource.dao.ChatDao
 import com.example.dymessagelite.data.model.ChatEntity
 import com.example.dymessagelite.data.model.MegDetailCell
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.concurrent.thread
 
 fun ChatEntity.toMegDetailCell(): MegDetailCell {
@@ -19,34 +23,45 @@ fun ChatEntity.toMegDetailCell(): MegDetailCell {
     )
 }
 
+fun MegDetailCell.toChatEntity(senderId: String): ChatEntity {
+    return ChatEntity(
+        content = content,
+        timestamp = timestamp,
+        isMine = isMine,
+        senderId = senderId
+    )
+}
+
 fun List<ChatEntity>.toMegDetailCellList(): List<MegDetailCell> {
     return this.map {
         it.toMegDetailCell()
     }
 }
 
-class ChatRepository(private val chatDao: ChatDao) : Subject<List<MegDetailCell>> {
+
+class ChatRepository(
+    private val chatDao: ChatDao
+) : Subject<List<MegDetailCell>> {
     private var observers: MutableList<Observer<List<MegDetailCell>>> = mutableListOf()
-    private val mainHandler = Handler(Looper.getMainLooper())
-    fun getChatList(senderId: String) {
-        thread {
-            val res = chatDao.getChatList(senderId)
-            val chatList = res.toMegDetailCellList()
-            mainHandler.post {
-                notifyObservers(chatList, EventType.UPDATE_ALL_CHAT)
-            }
-        }
+
+
+    suspend fun getChatList(senderId: String) {
+
+        val res = chatDao.getChatList(senderId)
+        val chatList = res.toMegDetailCellList()
+        notifyObservers(chatList, EventType.UPDATE_ALL_CHAT)
+
     }
 
-    fun sendMeg(meg: ChatEntity) {
-        thread {
-            chatDao.insertChat(meg)
-            val chat = meg.toMegDetailCell()
-            val chatList = listOf(chat)
-            mainHandler.post {
-                notifyObservers(chatList, EventType.NEW_CHAT_SEND)
-            }
+    suspend fun sendMeg(meg: MegDetailCell, senderId: String) {
+
+        val insertMeg = meg.toChatEntity(senderId)
+        chatDao.insertChat(insertMeg)
+        val chatList = listOf(meg)
+        withContext(Dispatchers.Main) {
+            notifyObservers(chatList, EventType.NEW_CHAT_SEND)
         }
+
     }
 
     override fun addObserver(observer: Observer<List<MegDetailCell>>) {

@@ -5,45 +5,55 @@ import android.os.Looper
 import com.example.dymessagelite.common.observer.EventType
 import com.example.dymessagelite.common.observer.Observer
 import com.example.dymessagelite.common.observer.Subject
-import com.example.dymessagelite.data.datasource.json.MegLocalDataSource
+import com.example.dymessagelite.data.datasource.dao.MegDao
+import com.example.dymessagelite.data.model.MegEntity
 import com.example.dymessagelite.data.model.MegItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 import kotlin.concurrent.thread
 import kotlin.math.min
 
-class MegListRepository(private val localDataSource: MegLocalDataSource): Subject<List<MegItem>>{
+fun MegEntity.toMegItem(): MegItem {
+    return MegItem(
+        id = friendId,
+        headId = headId,
+        name = friendName,
+        summary = latestMessage,
+        timestamp = timestamp.toString(),
+        unreadCount = unreadCount
+    )
+}
 
-    private val mainHandler = Handler(Looper.getMainLooper())
-    private var allMessages: List<MegItem>? = null
+fun List<MegEntity>.toMegItems(): List<MegItem> {
+    return this.map {
+        it.toMegItem()
+    }
+}
+
+class MegListRepository(
+    private val megDao: MegDao
+) : Subject<List<MegItem>> {
 
     private var observers: MutableList<Observer<List<MegItem>>> = mutableListOf()
 
-    fun fetchMeg(page: Int,pageSize: Int) {
-        thread {
-            if (allMessages == null) {
-                allMessages = localDataSource.loadAllMessage()
-            }
-            val resMessage = allMessages;
-            if (resMessage.isNullOrEmpty()) {
-                mainHandler.post {
-                    notifyObservers(emptyList(), EventType.LOAD_IS_EMPTY)
-                }
-                return@thread
-            }
 
-            val startItemIndex = (page - 1) * pageSize;
-            if (startItemIndex >= resMessage.size) {
-                mainHandler.post {
-                    notifyObservers(emptyList(),EventType.LOAD_IS_EMPTY)
-                }
-                return@thread
+    suspend fun fetchMeg(page: Int, pageSize: Int) {
+
+        val megEntities: List<MegEntity> = megDao.getMegList(pageSize, (page - 1) * pageSize)
+        if (megEntities.isEmpty()) {
+            withContext(Dispatchers.Main) {
+                notifyObservers(emptyList(), EventType.LOAD_IS_EMPTY)
             }
-            val endItemIndex = min(startItemIndex + pageSize, resMessage.size)
-            val subList = resMessage.subList(startItemIndex, endItemIndex)
-            mainHandler.post {
-                notifyObservers(subList,EventType.LOAD_OR_GET_MESSAGE)
+        } else {
+            val megItems = megEntities.toMegItems();
+            withContext(Dispatchers.Main) {
+                notifyObservers(megItems, EventType.LOAD_OR_GET_MESSAGE)
             }
         }
+
     }
 
     override fun addObserver(observer: Observer<List<MegItem>>) {
@@ -56,7 +66,7 @@ class MegListRepository(private val localDataSource: MegLocalDataSource): Subjec
 
     override fun notifyObservers(data: List<MegItem>, eventType: EventType) {
         observers.forEach {
-            it.update(data,eventType)
+            it.update(data, eventType)
         }
 
     }

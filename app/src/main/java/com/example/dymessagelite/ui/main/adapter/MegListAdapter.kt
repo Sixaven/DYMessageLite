@@ -26,7 +26,7 @@ class MegListAdapter (private val onItemClick: (MegItem) -> Unit)
 
             binding.tvNickname.text = item.name
             binding.tvSummary.text = item.summary
-            binding.tvTime.text = item.time
+            binding.tvTime.text = item.timestamp
 
             // 4. 根据未读数，控制角标的显示和内容
             if (item.unreadCount > 0) {
