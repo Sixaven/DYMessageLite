@@ -9,8 +9,11 @@ import com.example.dymessagelite.data.model.MegEntity
 @Dao
 interface MegDao {
     @Query("select * from MegEntity order by timestamp desc  limit :limit offset :offset")
-    fun getMegList(limit: Int, offset: Int): List<MegEntity>
+    suspend fun getMegList(limit: Int, offset: Int): List<MegEntity>
+
+    @Query("select * from MegEntity where name = :senderId")
+    suspend fun getMegBySenderId(senderId: String): MegEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertOrUpdateMeg(meg: MegEntity)
+    suspend fun insertOrUpdateMeg(meg: MegEntity)
 }

@@ -1,6 +1,7 @@
 package com.example.dymessagelite.data.datasource.database
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -15,7 +16,13 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlin.math.log
+import kotlin.random.Random
 
 @Database(entities = [ChatEntity::class, MegEntity::class], version = 1)
 abstract class ChatDatabase : RoomDatabase() {
@@ -24,41 +31,51 @@ abstract class ChatDatabase : RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "chat_database"
+        @Volatile
         private var INSTANCE: ChatDatabase? = null;
+        private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        private val _isDatabaseCreated = MutableStateFlow(false)
+        val isDatabaseCreated = _isDatabaseCreated.asStateFlow()
 
         fun getDatabase(
             context: Context
         ): ChatDatabase {
             return INSTANCE ?: synchronized(this) {
-                val scope = CoroutineScope(Dispatchers.IO)
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    ChatDatabase::class.java,
-                    DATABASE_NAME
-                )
-                .addCallback(DatabaseCallback(context,scope))
-                .build()
+                val instance = buildDatabase(context)
                 INSTANCE = instance
                 instance
             }
         }
+        private fun buildDatabase(context: Context): ChatDatabase {
+            val dbFile = context.getDatabasePath(DATABASE_NAME)
+            _isDatabaseCreated.value = dbFile.exists()
+            val instance = Room.databaseBuilder(
+                context,
+                ChatDatabase::class.java,
+                DATABASE_NAME
+            ).addCallback(DatabaseCallback(context)).build()
+            return instance;
+        }
     }
-
     private class DatabaseCallback(
-        private val context: Context,
-        private val scope: CoroutineScope
+        private val context: Context
     ) : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
-           scope.launch {
-               val database = getDatabase(context)
 
-               val megDao = database.megDao();
-               val chatDao = database.chatDao();
-
-               preFullMeg(megDao)
-               preFullChat(chatDao)
-           }
+            INSTANCE?.let { database ->
+                scope.launch {
+                    val megDao = database.megDao()
+                    val chatDao = database.chatDao()
+//                添加消息列表信息
+                    preFullMeg(megDao)
+//                添加消息详情信息
+                    preFullChat(chatDao)
+                    _isDatabaseCreated.value = true
+//                通知仓库数据库初始化完毕
+                    Log.e("[databaseTest-init]",System.currentTimeMillis().toString())
+                }
+            }
         }
 
         private suspend fun preFullMeg(megDao: MegDao) {
@@ -67,8 +84,10 @@ abstract class ChatDatabase : RoomDatabase() {
                 "megData.json",
                 object : TypeToken<List<MegEntity>>() {}
             )
-
-            megList.forEach { megDao.insertOrUpdateMeg(it) }
+            val megListWithTimestamp = setDescendingTimestamps(megList) { item, timestamp ->
+                item.copy(timestamp = timestamp)
+            }
+            megListWithTimestamp.forEach { megDao.insertOrUpdateMeg(it) }
         }
 
         private suspend fun preFullChat(chatDao: ChatDao) {
@@ -77,8 +96,28 @@ abstract class ChatDatabase : RoomDatabase() {
                 "chatData.json",
                 object : TypeToken<List<ChatEntity>>() {}
             )
-            chatList.forEach { chatDao.insertChat(it) }
+            val chatListWithTimestamp = setDescendingTimestamps(chatList) { item, timestamp ->
+                item.copy(timestamp = timestamp)
+            }
+            chatListWithTimestamp.forEach { chatDao.insertChat(it) }
+        }
+
+        private fun <T> setDescendingTimestamps(
+            originalList: List<T>,
+            copyWithTimestamp: (item: T, timestamp: Long) -> T
+        ): List<T> {
+            var currentTime = System.currentTimeMillis()
+
+            return originalList.map { originalItem ->
+                // 调用传入的 lambda 来创建一个带新时间戳的副本
+                val itemWithTimestamp = copyWithTimestamp(originalItem, currentTime)
+
+                // 为下一个 item 准备一个更早的时间戳 (随机减少5到60分钟)
+                val randomMinutes = Random.nextInt(5, 60)
+                currentTime -= randomMinutes * 60 * 1000L
+
+                itemWithTimestamp
+            }
         }
     }
-
 }

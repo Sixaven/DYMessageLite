@@ -6,12 +6,12 @@ import androidx.room.PrimaryKey
 @Entity
 data class MegEntity (
     @PrimaryKey
-    val friendId: String,
-    val headId: String,
-    val friendName: String,
+    val id: String,
+    val avatar: String,
+    val name: String,
     val latestMessage: String,
     val timestamp: Long,
-    val unreadCount: Int
+    var unreadCount: Int
 )
 
 

@@ -6,9 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dymessagelite.R
+import com.example.dymessagelite.common.tracker.AppStateTracker
 import com.example.dymessagelite.data.datasource.database.ChatDatabase
 import com.example.dymessagelite.data.model.MegDetailCell
 import com.example.dymessagelite.data.repository.ChatRepository
+import com.example.dymessagelite.data.repository.MegDispatcherRepository
 import com.example.dymessagelite.databinding.ActivityMessageDetailBinding
 import com.example.dymessagelite.ui.detail.adapter.MegDetailAdapter
 import java.lang.Exception
@@ -18,16 +20,29 @@ interface MessageDetailView {
     fun displayChatList(chatList: List<MegDetailCell>)
 
     //List中只有一个MegDetailCell
-    fun displaySendMeg(chat: List<MegDetailCell>)
+    fun displaySendMeg(chat: MegDetailCell)
 }
 
 class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, MessageDetailView {
     private lateinit var binding: ActivityMessageDetailBinding
-    private lateinit var chatRepository: ChatRepository
+    private lateinit var megDispatcherRepository: MegDispatcherRepository
     private lateinit var megDetailAdapter: MegDetailAdapter
     private lateinit var megDetailControl: MegDetailControl
 
     private lateinit var senderId: String
+
+    override fun onResume() {
+        super.onResume()
+        AppStateTracker.onActivityResumed(
+            AppStateTracker.CurrentActivity.MESSAGE_DETAIL,
+            senderId
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        AppStateTracker.onActivityPaused()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +53,6 @@ class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, Message
         initToolBar()
         initRecycleView()
 
-        initRepository()
         initControl()
         setInputAndButtonListener()
 
@@ -46,8 +60,8 @@ class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, Message
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         megDetailControl.onStop()
     }
 
@@ -83,14 +97,20 @@ class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, Message
         }
     }
 
-    fun initRepository() {
-        val chatDatabase = ChatDatabase.getDatabase(this)
-        val chatDao = chatDatabase.chatDao()
-        chatRepository = ChatRepository(chatDao)
-    }
+
 
     fun initControl() {
-        megDetailControl = MegDetailControl(senderId, chatRepository, this);
+        val database = ChatDatabase.getDatabase(this)
+        val chatDao = database.chatDao()
+        val megDao = database.megDao()
+        val chatRepository = ChatRepository.getInstance(chatDao,megDao)
+        megDispatcherRepository = MegDispatcherRepository.getInstance(megDao,chatDao,this)
+        megDetailControl = MegDetailControl(
+            senderId,
+            chatRepository,
+            megDispatcherRepository,
+            this
+        );
     }
 
     fun initToolBar() {
@@ -108,9 +128,10 @@ class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, Message
 //            }
 //        }
         binding.etInputMessage.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
-            view.postDelayed({
+
+            binding.recyclerViewChat.postDelayed({
                 scrollToBottom()
-            }, 200)
+            },200)
         }
         binding.btnSend.setOnClickListener(this)
     }
@@ -141,9 +162,9 @@ class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, Message
         megDetailAdapter.submitList(chatList)
     }
 
-    override fun displaySendMeg(chat: List<MegDetailCell>) {
+    override fun displaySendMeg(chat: MegDetailCell) {
         val curList = megDetailAdapter.currentList.toMutableList()
-        curList.addAll(chat)
+        curList.add(chat)
         megDetailAdapter.submitList(curList)
     }
 

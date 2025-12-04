@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ShapeAppearance.Image.Rounded" parent="ShapeAppearance.Material3.SmallComponent">
+        <!-- 圆角类型：rounded（圆角）/cut（切角，直角凹进去） -->
+        <item name="cornerFamily">rounded</item>
+        <!-- 圆角大小：严格对应你需要的49dp -->
+        <item name="cornerSize">16dp</item>
+    </style>
+</resources>

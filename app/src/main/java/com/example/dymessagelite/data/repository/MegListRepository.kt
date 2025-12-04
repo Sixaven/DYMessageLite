@@ -2,69 +2,68 @@ package com.example.dymessagelite.data.repository
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import com.example.dymessagelite.common.observer.EventType
 import com.example.dymessagelite.common.observer.Observer
 import com.example.dymessagelite.common.observer.Subject
 import com.example.dymessagelite.data.datasource.dao.MegDao
+import com.example.dymessagelite.data.datasource.database.ChatDatabase
 import com.example.dymessagelite.data.model.MegEntity
 import com.example.dymessagelite.data.model.MegItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 import kotlin.concurrent.thread
 import kotlin.math.min
 
-fun MegEntity.toMegItem(): MegItem {
-    return MegItem(
-        id = friendId,
-        headId = headId,
-        name = friendName,
-        summary = latestMessage,
-        timestamp = timestamp.toString(),
-        unreadCount = unreadCount
-    )
-}
-
-fun List<MegEntity>.toMegItems(): List<MegItem> {
-    return this.map {
-        it.toMegItem()
-    }
-}
 
 class MegListRepository(
     private val megDao: MegDao
-) : Subject<List<MegItem>> {
+) : Subject<List<MegEntity>> {
 
-    private var observers: MutableList<Observer<List<MegItem>>> = mutableListOf()
+    private var observers: MutableList<Observer<List<MegEntity>>> = mutableListOf()
 
 
     suspend fun fetchMeg(page: Int, pageSize: Int) {
-
+        megDao.getMegList(0,0)
+        ChatDatabase.isDatabaseCreated.first { isDatabaseCreated -> isDatabaseCreated}
+        Log.e("[databaseTest-get]",System.currentTimeMillis().toString())
         val megEntities: List<MegEntity> = megDao.getMegList(pageSize, (page - 1) * pageSize)
         if (megEntities.isEmpty()) {
             withContext(Dispatchers.Main) {
                 notifyObservers(emptyList(), EventType.LOAD_IS_EMPTY)
             }
         } else {
-            val megItems = megEntities.toMegItems();
             withContext(Dispatchers.Main) {
-                notifyObservers(megItems, EventType.LOAD_OR_GET_MESSAGE)
+                notifyObservers(megEntities, EventType.LOAD_OR_GET_MESSAGE)
             }
         }
-
     }
 
-    override fun addObserver(observer: Observer<List<MegItem>>) {
+    suspend fun jumpDetail(senderId: String){
+        val oldMeg = megDao.getMegBySenderId(senderId)
+        oldMeg?.let {
+            it.unreadCount = 0
+            megDao.insertOrUpdateMeg(oldMeg)
+            val newMeg = listOf(oldMeg)
+            withContext(Dispatchers.Main){
+                notifyObservers(newMeg, eventType = EventType.JUMP_TO_DETAIL)
+            }
+        };
+    }
+
+    override fun addObserver(observer: Observer<List<MegEntity>>) {
         observers.add(observer)
     }
 
-    override fun removeObserver(observer: Observer<List<MegItem>>) {
+    override fun removeObserver(observer: Observer<List<MegEntity>>) {
         observers.remove(observer)
     }
 
-    override fun notifyObservers(data: List<MegItem>, eventType: EventType) {
+    override fun notifyObservers(data: List<MegEntity>, eventType: EventType) {
         observers.forEach {
             it.update(data, eventType)
         }
