@@ -8,6 +8,7 @@ import com.example.dymessagelite.common.tracker.AppStateTracker
 import com.example.dymessagelite.data.datasource.database.ChatDatabase
 import com.example.dymessagelite.data.model.ChatEntity
 import com.example.dymessagelite.data.model.ChatEvent
+import com.example.dymessagelite.data.model.ChatType
 import com.example.dymessagelite.data.model.MegDetailCell
 import com.example.dymessagelite.data.model.MegDispatcherEvent
 import com.example.dymessagelite.data.repository.ChatRepository
@@ -82,7 +83,8 @@ class MegDetailControl(
                 content = content,
                 timestamp = System.currentTimeMillis(),
                 isMine = true,
-                senderId = senderId
+                senderId = senderId,
+                type = ChatType.TEXT
             )
             chatRepository.sendMeg(newMessage)
         }

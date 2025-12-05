@@ -23,7 +23,7 @@
     <!-- 2. 消息内容 (在头像右侧) -->
     <!-- 使用背景 drawable (比如一个带圆角的灰色矩形) 来创建气泡效果 -->
     <Button
-        android:id="@+id/tv_other_message_content"
+        android:id="@+id/tv_other_action_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -32,7 +32,7 @@
         android:textColor="@android:color/black"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/iv_other_avatar"
         app:layout_constraintTop_toTopOf="@id/iv_other_avatar"
         app:layout_constraintWidth_default="wrap"

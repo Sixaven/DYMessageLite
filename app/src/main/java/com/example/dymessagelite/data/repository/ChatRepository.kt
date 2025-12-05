@@ -45,7 +45,8 @@ class ChatRepository private constructor(
                 name = oldMeg.name,
                 latestMessage = meg.content,
                 timestamp = meg.timestamp,
-                unreadCount = oldMeg.unreadCount
+                unreadCount = oldMeg.unreadCount,
+                type = meg.type
             )
             chatDao.insertChat(meg)
             megDao.insertOrUpdateMeg(newMeg)

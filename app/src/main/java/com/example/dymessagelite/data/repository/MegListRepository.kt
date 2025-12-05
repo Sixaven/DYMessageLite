@@ -25,8 +25,12 @@ class MegListRepository(
 ) : Subject<List<MegEntity>> {
 
     private var observers: MutableList<Observer<List<MegEntity>>> = mutableListOf()
-
-
+    suspend fun getAllMeg(callback: (List<MegEntity>) -> Unit){
+        val megEntities: List<MegEntity> = megDao.getMegList(0,0)
+        withContext(Dispatchers.Main){
+            callback(megEntities)
+        }
+    }
     suspend fun fetchMeg(page: Int, pageSize: Int) {
         megDao.getMegList(0,0)
         ChatDatabase.isDatabaseCreated.first { isDatabaseCreated -> isDatabaseCreated}
@@ -53,6 +57,12 @@ class MegListRepository(
                 notifyObservers(newMeg, eventType = EventType.JUMP_TO_DETAIL)
             }
         };
+    }
+    suspend fun search(keyword: String){
+        val resList = megDao.searchMegsByName(keyword)
+        withContext(Dispatchers.Main){
+            notifyObservers(resList, EventType.SEARCH_MESSAGE)
+        }
     }
 
     override fun addObserver(observer: Observer<List<MegEntity>>) {

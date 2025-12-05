@@ -7,6 +7,7 @@ import com.example.dymessagelite.common.toMegItem
 import com.example.dymessagelite.common.toMegItems
 import com.example.dymessagelite.common.tracker.AppStateTracker
 import com.example.dymessagelite.data.datasource.database.ChatDatabase
+import com.example.dymessagelite.data.model.ChatEntity
 import com.example.dymessagelite.data.model.ChatEvent
 import com.example.dymessagelite.data.model.MegDispatcherEvent
 import com.example.dymessagelite.data.model.MegEntity
@@ -36,6 +37,8 @@ class MegListControl(
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + Dispatchers.IO)
     private var senderId: String? = null;
+    private var allMegList: MutableList<MegItem> = mutableListOf()
+    private val searchList: MutableList<MegItem> = mutableListOf()
 
     private val listObserver = object : Observer<List<MegEntity>> {
         override fun update(data: List<MegEntity>, eventType: EventType) {
@@ -43,17 +46,25 @@ class MegListControl(
             when(eventType) {
                 EventType.LOAD_OR_GET_MESSAGE -> {
                     isLoading = false
-                    view.getMegListOrLoadMore(viewDataList)
+                    val existingIds = allMegList.map { it.id }.toSet()
+                    val newItems = viewDataList.filter { it.id !in existingIds }
+                    allMegList.addAll(newItems)
+                    view.getMegListOrLoadMore(allMegList)
                 }
                 EventType.LOAD_IS_EMPTY -> {
                     isLastPage = true;
                     isLoading = false;
                     view.loadEmpty()
                 }
-
                 EventType.JUMP_TO_DETAIL -> {
                     val meg = viewDataList[0];
-                    view.jumpDetail(meg)
+                    updateItemInPlace(meg)
+                    view.jumpDetail(allMegList)
+                }
+                EventType.SEARCH_MESSAGE -> {
+                    searchList.clear()
+                    searchList.addAll(viewDataList)
+                    view.displaySearchResult(searchList)
                 }
                 else -> {}
             }
@@ -97,6 +108,9 @@ class MegListControl(
         curPage = 1;
         scope.launch {
             megListRepository.fetchMeg(curPage, pageSize)
+            megListRepository.getAllMeg { megEntities ->
+                allMegList.addAll(megEntities.map { it.toMegItem() })
+            }
         }
     }
     fun loadMore(){
@@ -119,6 +133,14 @@ class MegListControl(
             megListRepository.jumpDetail(senderId)
         }
     }
+    fun searchMeg(keyword: String){
+        scope.launch {
+            megListRepository.search(keyword)
+        }
+    }
+    fun backFromSearch(){
+        view.backFromSearch(allMegList)
+    }
     fun sendChatOther(data: MegItem){
         val curActivity = AppStateTracker.getCurActivity()
         when(curActivity){
@@ -126,13 +148,15 @@ class MegListControl(
                 val senderId = AppStateTracker.getCurDetailSenderId();
                 senderId?.apply {
                     if(senderId != data.name){
-                        view.receiveMegChangeByOther(data)
+                        updateAndMoveToTop(data)
+                        view.receiveMegChangeByOther(allMegList)
                     }
                 }
             }
 
             AppStateTracker.CurrentActivity.MESSAGE_LIST->{
-                view.receiveMegChangeByOther(data)
+                updateAndMoveToTop(data)
+                view.receiveMegChangeByOther(allMegList)
             }
             else -> {
 
@@ -140,6 +164,24 @@ class MegListControl(
         }
     }
     fun sendChatMine(data: MegItem){
-        view.receiveMegChangeByMine(data)
+        updateItemInPlace(data)
+        view.receiveMegChangeByMine(allMegList)
     }
+
+    fun updateItemInPlace(newItem: MegItem) {
+        val index = allMegList.indexOfFirst { it.id == newItem.id }
+        if (index != -1) {
+            allMegList[index] = newItem
+        }else{
+            throw Exception("updateItemInPlace error")
+        }
+    }
+    fun updateAndMoveToTop( newItem: MegItem) {
+        val oldIndex = allMegList.indexOfFirst { it.id == newItem.id }
+        if (oldIndex != -1) {
+            allMegList.removeAt(oldIndex)
+        }
+        allMegList.add(0, newItem)
+    }
+
 }

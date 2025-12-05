@@ -16,4 +16,10 @@ interface MegDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateMeg(meg: MegEntity)
+    @Query("SELECT * FROM MegEntity WHERE name LIKE '%' || :keyword || '%'")
+    suspend fun searchMegsByName(keyword: String): List<MegEntity>
+    @Query("select * from MegEntity")
+    suspend fun getAllMegs(): List<MegEntity>
+
+
 }

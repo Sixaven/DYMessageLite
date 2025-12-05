@@ -5,110 +5,177 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+
 import androidx.recyclerview.widget.RecyclerView
+import com.example.dymessagelite.R
+
+import com.example.dymessagelite.data.model.DisplayListItem
+import com.example.dymessagelite.data.model.DisplayType
 import com.example.dymessagelite.data.model.MegItem
-import com.example.dymessagelite.databinding.ItemMessageBinding
+import com.example.dymessagelite.data.model.MegType
+
+
+import com.example.dymessagelite.databinding.ItemMessageButtonBinding
+import com.example.dymessagelite.databinding.ItemMessageImageBinding
+import com.example.dymessagelite.databinding.ItemMessageSearchBinding
+import com.example.dymessagelite.databinding.ItemMessageTextBinding
 
 class MegListAdapter (
-    private val megList: MutableList<MegItem> = mutableListOf(),
-    private val onItemClick: (MegItem) -> Unit
+    private val onItemClick: (DisplayListItem) -> Unit
 )
-    : RecyclerView.Adapter<MegListAdapter.MegViewHolder>(){
+    : ListAdapter<DisplayListItem,RecyclerView.ViewHolder>(DiffCallback()){
 
-    inner class MegViewHolder(val binding: ItemMessageBinding): RecyclerView.ViewHolder(binding.root){
+    companion object {
+
+        private const val VIEW_TYPE_TEXT = 0
+        private const val VIEW_TYPE_IMAGE = 1
+        private const val VIEW_TYPE_BUTTON = 2
+        private const val VIEW_SEARCH_RESULT = 3
+    }
+
+    inner class TextViewHolder(val binding: ItemMessageTextBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            // 为每个 ViewHolder 设置点击事件
+            itemView.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(getItem(position))
+                }
+            }
+        }
+
+        fun bind(item: DisplayListItem) {
+            binding.tvNickname.text = item.name
+            binding.tvSummary.text = item.context // 这是文本摘要
+            binding.tvTime.text = item.timestamp
+            updateBadge(binding.root, item.unreadCount) // 使用一个辅助方法来更新角标
+        }
+    }
+
+    // 图片 ViewHolder
+    inner class ImageViewHolder(val binding: ItemMessageImageBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             itemView.setOnClickListener {
-                val position = bindingAdapterPosition;
-                if(position != RecyclerView.NO_POSITION){
-                    val item = getItem(position);
-                    onItemClick(item)
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(getItem(position))
                 }
             }
         }
-        fun bind(item: MegItem) {
 
+        fun bind(item: DisplayListItem) {
             binding.tvNickname.text = item.name
-            binding.tvSummary.text = item.summary
+            // 这里可以加载图片，例如使用 Glide
+            // Glide.with(itemView.context).load(item.imageUrl).into(binding.ivSummaryImage)
+            //binding.ivSummaryImage.setImageResource()
             binding.tvTime.text = item.timestamp
+            updateBadge(binding.root, item.unreadCount)
+        }
+    }
 
-            // 4. 根据未读数，控制角标的显示和内容
-            if (item.unreadCount > 0) {
-                binding.tvUnreadBadge.visibility = View.VISIBLE
-                // 如果未读数大于99，显示"99+"，否则显示具体数字
-                binding.tvUnreadBadge.text = if (item.unreadCount > 99) {
-                    "99+"
-                } else {
-                    item.unreadCount.toString()
+    // 按钮 ViewHolder
+    inner class ButtonViewHolder(val binding: ItemMessageButtonBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            itemView.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(getItem(position))
                 }
-            } else {
-                // 如果未读数为0，则隐藏角标
-                binding.tvUnreadBadge.visibility = View.GONE
+            }
+        }
+
+        fun bind(item: DisplayListItem) {
+            binding.tvNickname.text = item.name
+            binding.btnSummaryAction.text = item.context // 按钮上的文字
+            binding.tvTime.text = item.timestamp
+            binding.tvUnreadBadge.visibility = View.GONE
+        }
+    }
+    inner class SearchResultViewHolder(val binding: ItemMessageSearchBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            itemView.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(getItem(position))
+                }
+            }
+        }
+        fun bind(item: DisplayListItem) {
+            binding.tvNickname.text = item.name
+            // 这里可以加载图片，例如使用 Glide
+            // Glide.with(itemView.context).load(item.imageUrl).into(binding.ivSummaryImage)
+            binding.tvContent.text = item.context
+            binding.tvTime.text = item.timestamp
+        }
+    }
+    // 辅助方法，用于更新未读角标，避免在每个 bind 方法中重复代码
+    private fun updateBadge(view: View, unreadCount: Int) {
+        val badge = view.findViewById<android.widget.TextView>(R.id.tv_unread_badge)
+        if (unreadCount > 0) {
+            badge.visibility = View.VISIBLE
+            badge.text = if (unreadCount > 99) "99+" else unreadCount.toString()
+        } else {
+            badge.visibility = View.GONE
+        }
+    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
+        return when (viewType) {
+            VIEW_TYPE_TEXT -> {
+                val binding = ItemMessageTextBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                TextViewHolder(binding)
+            }
+            VIEW_TYPE_IMAGE -> {
+                val binding = ItemMessageImageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                ImageViewHolder(binding)
+            }
+            VIEW_TYPE_BUTTON -> {
+                val binding = ItemMessageButtonBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                ButtonViewHolder(binding)
+            }
+            VIEW_SEARCH_RESULT -> {
+                val binding = ItemMessageSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                SearchResultViewHolder(binding)
             }
 
-            // binding.ivAvatar.setImageResource(...)
+            else -> throw IllegalArgumentException("Invalid view type")
         }
     }
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MegViewHolder {
-        val binding = ItemMessageBinding.inflate(
-            LayoutInflater.from(parent.context)
-            ,parent
-            ,false
-        )
-        return MegViewHolder(binding)
-    }
 
-    override fun onBindViewHolder(holder: MegViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
+        when(holder){
+            is TextViewHolder -> holder.bind(item)
+            is ImageViewHolder -> holder.bind(item)
+            is ButtonViewHolder -> holder.bind(item)
+            is SearchResultViewHolder -> holder.bind(item)
+        }
     }
 
-    override fun getItemCount(): Int {
-        return megList.size
-    }
-    fun updateDataAndMoveTop(newItem: MegItem){
-        val oldIndex = megList.indexOfFirst { it.id == newItem.id }
-
-        if(oldIndex != -1){
-            megList.removeAt(oldIndex)
-            megList.add(0,newItem)
-            notifyItemMoved(oldIndex,0);
-            notifyItemChanged(0);
+    override fun getItemViewType(position: Int): Int {
+        val item = getItem(position)
+        return if(item.displayType == DisplayType.DEFAULT){
+            when(item.contentType){
+                MegType.TEXT -> VIEW_TYPE_TEXT
+                MegType.IMAGE -> VIEW_TYPE_IMAGE
+                else -> VIEW_TYPE_BUTTON
+            }
+        }else if(item.displayType == DisplayType.SEARCH){
+            VIEW_SEARCH_RESULT
         }else{
-            megList.add(0,newItem)
-            notifyItemInserted(0)
+            throw IllegalArgumentException("Invalid view type")
         }
     }
-
-    fun updateUnreadPlace(newItem: MegItem){
-        val oldIndex = megList.indexOfFirst { it.id == newItem.id }
-        if(oldIndex != -1){
-            megList[oldIndex] = newItem
-            notifyItemChanged(oldIndex)
-        }else{
-            throw IllegalArgumentException("旧的发送者居然没有找到 干鸡毛呢")
-        }
+}
+class DiffCallback : DiffUtil.ItemCallback<DisplayListItem>() {
+    // 判断两个对象是否代表同一个Item。通常用唯一的ID来比较。
+    override fun areItemsTheSame(oldItem: DisplayListItem, newItem: DisplayListItem): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    fun addMoreData(newItems: List<MegItem>) {
-        // 为了高效地检查重复，先创建一个包含现有所有 item ID 的 Set
-        val existingIds = megList.map { it.id }.toSet()
-        // 过滤传入的新数据，只保留那些 ID 不在现有 Set 中的 item
-        val uniqueNewItems = newItems.filter { it.id !in existingIds }
-
-        // 如果确实有新的、不重复的数据需要添加
-        if (uniqueNewItems.isNotEmpty()) {
-            val startPosition = megList.size
-            megList.addAll(uniqueNewItems)
-            notifyItemRangeInserted(startPosition, uniqueNewItems.size)
-        }
-    }
-    fun getItem(position: Int): MegItem {
-        return megList[position]
-    }
-
-    fun setData(data: List<MegItem>){
-        megList.clear()
-        megList.addAll(data)
-        notifyDataSetChanged()
+    // 判断两个Item的内容是否完全相同。
+    // Kotlin的data class会自动生成equals()方法，非常适合用于此场景。
+    override fun areContentsTheSame(oldItem: DisplayListItem, newItem: DisplayListItem): Boolean {
+        return oldItem == newItem
     }
 }

@@ -1,0 +1,19 @@
+package com.example.dymessagelite.data.model
+
+data class DisplayListItem(
+    val id: String,
+    val avatar: String,
+    val name: String,
+    val context: String,
+    val timestamp: String,
+    val contentType: Int,
+    val unreadCount: Int,
+    val displayType: Int
+)
+object DisplayType {
+    const val DEFAULT = 0
+    const val SEARCH = 1
+}
+
+
+

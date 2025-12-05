@@ -1,7 +1,13 @@
 package com.example.dymessagelite.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+
+object ChatType {
+    const val TEXT = 0
+    const val IMAGE = 1
+}
 
 @Entity
 data class ChatEntity(
@@ -10,5 +16,7 @@ data class ChatEntity(
     val senderId: String,
     val isMine: Boolean,
     val timestamp: Long,
-    val content: String
+    val content: String,
+    @ColumnInfo(defaultValue = "0")
+    val type: Int
 )

@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.dymessagelite.common.util.JsonUtils
 import com.example.dymessagelite.data.datasource.dao.ChatDao
@@ -24,18 +26,26 @@ import kotlinx.coroutines.launch
 import kotlin.math.log
 import kotlin.random.Random
 
-@Database(entities = [ChatEntity::class, MegEntity::class], version = 1)
+@Database(entities = [ChatEntity::class, MegEntity::class], version = 2)
 abstract class ChatDatabase : RoomDatabase() {
     abstract fun chatDao(): ChatDao
     abstract fun megDao(): MegDao
 
     companion object {
         const val DATABASE_NAME = "chat_database"
+
         @Volatile
         private var INSTANCE: ChatDatabase? = null;
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         private val _isDatabaseCreated = MutableStateFlow(false)
         val isDatabaseCreated = _isDatabaseCreated.asStateFlow()
+
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE ChatEntity ADD COLUMN type INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE MegEntity ADD COLUMN type INTEGER NOT NULL DEFAULT 0")
+            }
+        }
 
         fun getDatabase(
             context: Context
@@ -46,6 +56,7 @@ abstract class ChatDatabase : RoomDatabase() {
                 instance
             }
         }
+
         private fun buildDatabase(context: Context): ChatDatabase {
             val dbFile = context.getDatabasePath(DATABASE_NAME)
             _isDatabaseCreated.value = dbFile.exists()
@@ -53,10 +64,14 @@ abstract class ChatDatabase : RoomDatabase() {
                 context,
                 ChatDatabase::class.java,
                 DATABASE_NAME
-            ).addCallback(DatabaseCallback(context)).build()
+            )
+                .addCallback(DatabaseCallback(context))
+                .addMigrations(MIGRATION_1_2)
+                .build()
             return instance;
         }
     }
+
     private class DatabaseCallback(
         private val context: Context
     ) : RoomDatabase.Callback() {
@@ -73,7 +88,7 @@ abstract class ChatDatabase : RoomDatabase() {
                     preFullChat(chatDao)
                     _isDatabaseCreated.value = true
 //                通知仓库数据库初始化完毕
-                    Log.e("[databaseTest-init]",System.currentTimeMillis().toString())
+                    Log.e("[databaseTest-init]", System.currentTimeMillis().toString())
                 }
             }
         }

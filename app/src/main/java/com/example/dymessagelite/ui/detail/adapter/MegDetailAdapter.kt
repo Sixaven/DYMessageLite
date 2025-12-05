@@ -6,65 +6,134 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.dymessagelite.data.model.ChatType
 import com.example.dymessagelite.data.model.MegDetailCell
-import com.example.dymessagelite.databinding.ItemDetailMineBinding
-import com.example.dymessagelite.databinding.ItemDetailOtherBinding
+import com.example.dymessagelite.databinding.ItemDetailButtonOtherBinding
+import com.example.dymessagelite.databinding.ItemDetailImageMineBinding
+import com.example.dymessagelite.databinding.ItemDetailImageOtherBinding
+
+import com.example.dymessagelite.databinding.ItemDetailTextMineBinding
+import com.example.dymessagelite.databinding.ItemDetailTextOtherBinding
 
 class MegDetailAdapter(
     private val myAvatarId: Int,
     private val otherAvatarId: Int
-)
-    : ListAdapter<MegDetailCell, RecyclerView.ViewHolder>(ChatDiffCallback())
-{
+) : ListAdapter<MegDetailCell, RecyclerView.ViewHolder>(ChatDiffCallback()) {
     companion object {
-        private const val VIEW_TYPE_MINE = 1
-        private const val VIEW_TYPE_OTHER = 2
+        private const val VIEW_TYPE_MINE_TEXT = 1
+        private const val VIEW_TYPE_MINE_IMAGE = 2
+        private const val VIEW_TYPE_OTHER_TEXT = 3
+        private const val VIEW_TYPE_OTHER_IMAGE = 4
+        private const val VIEW_TYPE_OTHER_BUTTON = 5
     }
-    inner class MineViewHolder(val binding: ItemDetailMineBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(item: MegDetailCell){
+
+    inner class MineTextViewHolder(val binding: ItemDetailTextMineBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: MegDetailCell) {
             binding.ivMyAvatar.setImageResource(myAvatarId)
             binding.tvMyMessageContent.text = item.content
         }
     }
-    inner class OtherViewHolder(val binding: ItemDetailOtherBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(item: MegDetailCell){
+
+    inner class MineImageViewHolder(val binding: ItemDetailImageMineBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: MegDetailCell) {
+            binding.ivMyAvatar.setImageResource(myAvatarId)
+            binding.ivSummaryImage.setImageResource(myAvatarId)
+            // 使用 Glide 或其他库加载图片
+            // Glide.with(itemView.context).load(item.imageUrl).into(binding.ivMyMessageImage)
+        }
+    }
+
+    inner class OtherTextViewHolder(val binding: ItemDetailTextOtherBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: MegDetailCell) {
             binding.ivOtherAvatar.setImageResource(otherAvatarId)
             binding.tvOtherMessageContent.text = item.content
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return if(viewType == VIEW_TYPE_MINE){
-            val binding = ItemDetailMineBinding.inflate(inflater, parent, false)
-            MineViewHolder(binding)
-        }else{
-            val binding = ItemDetailOtherBinding.inflate(inflater, parent, false)
-            OtherViewHolder(binding)
+    inner class OtherImageViewHolder(val binding: ItemDetailImageOtherBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: MegDetailCell) {
+            binding.ivOtherAvatar.setImageResource(otherAvatarId)
+            binding.ivSummaryImage.setImageResource(otherAvatarId)
+            // 使用 Glide 或其他库加载图片
+            // Glide.with(itemView.context).load(item.imageUrl).into(binding.ivOtherMessageImage)
         }
     }
+
+    inner class OtherButtonViewHolder(val binding: ItemDetailButtonOtherBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: MegDetailCell) {
+            binding.ivOtherAvatar.setImageResource(otherAvatarId)
+            binding.tvOtherActionContent.text = item.content
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        // 根据 viewType 加载不同的布局，创建不同的 ViewHolder
+        return when (viewType) {
+            VIEW_TYPE_MINE_TEXT -> {
+                val binding = ItemDetailTextMineBinding.inflate(inflater, parent, false)
+                MineTextViewHolder(binding)
+            }
+            VIEW_TYPE_MINE_IMAGE -> {
+                val binding = ItemDetailImageMineBinding.inflate(inflater, parent, false)
+                MineImageViewHolder(binding)
+            }
+            VIEW_TYPE_OTHER_TEXT -> {
+                val binding = ItemDetailTextOtherBinding.inflate(inflater, parent, false)
+                OtherTextViewHolder(binding)
+            }
+            VIEW_TYPE_OTHER_IMAGE -> {
+                val binding = ItemDetailImageOtherBinding.inflate(inflater, parent, false)
+                OtherImageViewHolder(binding)
+            }
+            VIEW_TYPE_OTHER_BUTTON -> {
+                val binding = ItemDetailButtonOtherBinding.inflate(inflater, parent, false)
+                OtherButtonViewHolder(binding)
+            }
+            else -> throw IllegalArgumentException("Invalid view type") // 异常处理
+        }
+    }
+
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = getItem(position)
-        when(holder){
-         is MineViewHolder -> holder.bind(item)
-         is OtherViewHolder -> holder.bind(item)
+        when (holder) {
+            is MineTextViewHolder -> holder.bind(item)
+            is MineImageViewHolder -> holder.bind(item)
+            is OtherTextViewHolder -> holder.bind(item)
+            is OtherImageViewHolder -> holder.bind(item)
+            is OtherButtonViewHolder -> holder.bind(item)
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         val cell = getItem(position)
-        return if(cell.isMine){
-            VIEW_TYPE_MINE
-        }else{
-            VIEW_TYPE_OTHER
+        return if (cell.isMine) {
+            when(cell.type){
+                ChatType.TEXT -> VIEW_TYPE_MINE_TEXT
+                else -> VIEW_TYPE_MINE_IMAGE
+            }
+        } else {
+            when(cell.type){
+                ChatType.TEXT -> VIEW_TYPE_OTHER_TEXT
+                ChatType.IMAGE -> VIEW_TYPE_OTHER_IMAGE
+                else -> VIEW_TYPE_OTHER_BUTTON
+            }
         }
     }
 
 }
+
 class ChatDiffCallback : DiffUtil.ItemCallback<MegDetailCell>() {
     override fun areItemsTheSame(oldItem: MegDetailCell, newItem: MegDetailCell): Boolean {
         return oldItem.id == newItem.id
     }
+
     override fun areContentsTheSame(oldItem: MegDetailCell, newItem: MegDetailCell): Boolean {
         return oldItem == newItem
     }

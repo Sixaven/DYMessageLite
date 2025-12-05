@@ -1,7 +1,14 @@
 package com.example.dymessagelite.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+object MegType {
+    const val TEXT = 0
+    const val IMAGE = 1
+    const val ACTION = 2
+}
+
 
 @Entity
 data class MegEntity (
@@ -11,7 +18,9 @@ data class MegEntity (
     val name: String,
     val latestMessage: String,
     val timestamp: Long,
-    var unreadCount: Int
+    var unreadCount: Int,
+    @ColumnInfo(defaultValue = "0")
+    val type: Int
 )
 
 

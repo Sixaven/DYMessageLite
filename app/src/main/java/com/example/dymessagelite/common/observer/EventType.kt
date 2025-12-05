@@ -7,5 +7,6 @@ enum class EventType {
     LOAD_IS_EMPTY,
     LOAD_OR_GET_MESSAGE,
     SEND_CHAT_OTHER,
-    JUMP_TO_DETAIL
+    JUMP_TO_DETAIL,
+    SEARCH_MESSAGE
 }
