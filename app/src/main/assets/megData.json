@@ -1,0 +1,401 @@
+[{
+  "id": "user_001",
+  "avatar": "avatar_k",
+  "name": "K.",
+  "latestMessage": "现在可以开始聊天了！",
+  "timestamp": 0,
+  "unreadCount": 1
+},
+  {
+    "id": "user_002",
+    "avatar": "avatar_android_master",
+    "name": "Android 大师",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_003",
+    "avatar": "avatar_pm",
+    "name": "产品经理",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_004",
+    "avatar": "avatar_ui_designer",
+    "name": "UI 设计师",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_005",
+    "avatar": "avatar_tester",
+    "name": "测试工程师",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_006",
+    "avatar": "avatar_friend_6",
+    "name": "张三",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_007",
+    "avatar": "avatar_colleague",
+    "name": "摸鱼的同事",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_008",
+    "avatar": "avatar_shopkeeper",
+    "name": "楼下小卖部老板",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_009",
+    "avatar": "avatar_neighbor",
+    "name": "住在隔壁的王叔叔",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_010",
+    "avatar": "avatar_opensource_guru",
+    "name": "喜欢开源的大佬",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_011",
+    "avatar": "avatar_lisa",
+    "name": "Lisa",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_012",
+    "avatar": "avatar_backend_dev",
+    "name": "后端工程师",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_013",
+    "avatar": "avatar_hr",
+    "name": "公司HR",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_014",
+    "avatar": "avatar_boss",
+    "name": "老板",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_015",
+    "avatar": "avatar_intern",
+    "name": "新来的实习生",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_016",
+    "avatar": "avatar_primary_school_friend",
+    "name": "小学同学",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_017",
+    "avatar": "avatar_college_roommate",
+    "name": "大学室友",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_018",
+    "avatar": "avatar_gamer_friend",
+    "name": "一起开黑的队友",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_019",
+    "avatar": "avatar_landlord",
+    "name": "房东",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_020",
+    "avatar": "avatar_gym_coach",
+    "name": "健身教练",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_021",
+    "avatar": "avatar_doctor",
+    "name": "李医生",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_022",
+    "avatar": "avatar_teacher",
+    "name": "王老师",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_023",
+    "avatar": "avatar_lawyer",
+    "name": "张律师",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_024",
+    "avatar": "avatar_chef",
+    "name": "楼下餐厅大厨",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_025",
+    "avatar": "avatar_courier",
+    "name": "快递小哥",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_026",
+    "avatar": "avatar_barista",
+    "name": "常去的咖啡师",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_027",
+    "avatar": "avatar_devops",
+    "name": "运维大佬",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_028",
+    "avatar": "avatar_data_scientist",
+    "name": "数据科学家",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_029",
+    "avatar": "avatar_project_manager",
+    "name": "项目经理",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_030",
+    "avatar": "avatar_recruiter",
+    "name": "猎头",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_031",
+    "avatar": "avatar_mom",
+    "name": "妈妈",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_032",
+    "avatar": "avatar_dad",
+    "name": "爸爸",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_033",
+    "avatar": "avatar_sister",
+    "name": "姐姐",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_034",
+    "avatar": "avatar_brother",
+    "name": "弟弟",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_035",
+    "avatar": "avatar_grandma",
+    "name": "奶奶",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_036",
+    "avatar": "avatar_grandpa",
+    "name": "爷爷",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_037",
+    "avatar": "avatar_aunt",
+    "name": "小姨",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_038",
+    "avatar": "avatar_uncle",
+    "name": "三叔",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_039",
+    "avatar": "avatar_cousin",
+    "name": "表哥",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_040",
+    "avatar": "avatar_childhood_friend",
+    "name": "发小",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_041",
+    "avatar": "avatar_book_club_member",
+    "name": "读书会友",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_042",
+    "avatar": "avatar_travel_buddy",
+    "name": "旅行搭子",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_043",
+    "avatar": "avatar_volunteer_leader",
+    "name": "公益组织负责人",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_044",
+    "avatar": "avatar_mentor",
+    "name": "职业导师",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_045",
+    "avatar": "avatar_financial_advisor",
+    "name": "理财顾问",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_046",
+    "avatar": "avatar_language_partner",
+    "name": "语伴",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_047",
+    "avatar": "avatar_pet_sitter",
+    "name": "宠物托管师",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_048",
+    "avatar": "avatar_gardener",
+    "name": "园丁老张",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_049",
+    "avatar": "avatar_librarian",
+    "name": "图书馆管理员",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  },
+  {
+    "id": "user_050",
+    "avatar": "avatar_security_guard",
+    "name": "小区保安",
+    "latestMessage": "现在可以开始聊天了！",
+    "timestamp": 0,
+    "unreadCount": 1
+  }
+]

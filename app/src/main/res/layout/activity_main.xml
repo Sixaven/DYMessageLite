@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.main.MainActivity"
+    android:background="@color/colorPrimary"
   >
 
     <!-- 1. 顶部应用栏容器 (这个和 Toolbar 滚动相关，无法用 LinearLayout 替代) -->
@@ -13,7 +14,7 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:background="@color/colorPrimary"
-     >
+        app:elevation="0dp">
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,6 +23,7 @@
             android:background="@color/colorPrimary"
             android:layout_gravity="top"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:elevation="0dp"
             >
             <LinearLayout
                 android:id="@+id/search_LinearLayout"
@@ -62,7 +64,7 @@
                     android:orientation="horizontal"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
-                    android:paddingBottom="16dp">
+                    >
 
                     <!-- 左侧部分 -->
                     <de.hdodenhof.circleimageview.CircleImageView
@@ -86,7 +88,7 @@
                         android:id="@+id/toolbar_sync_switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="云同步"
+                        android:text="消息分发"
                         android:textColor="@android:color/white" />
 
                 </LinearLayout>
@@ -107,11 +109,15 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:srlEnableAutoLoadMore="false"
         android:background="@color/white"
+        android:layout_marginTop="16dp"
+        android:elevation="4dp"
         >
 
         <com.scwang.smart.refresh.header.ClassicsHeader
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_messages"

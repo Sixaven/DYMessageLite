@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-class ChatEntity(
+data class ChatEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val senderId: String,
