@@ -1,4 +1,4 @@
-package com.example.dymessagelite.data.model
+package com.example.dymessagelite.data.model.list
 
 data class MegItem(
     val id: String,

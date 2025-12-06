@@ -1,4 +1,4 @@
-package com.example.dymessagelite.data.model
+package com.example.dymessagelite.data.model.list
 
 data class DisplayListItem(
     val id: String,

@@ -6,27 +6,22 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
-import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.dymessagelite.common.util.JsonUtils
 import com.example.dymessagelite.data.datasource.dao.ChatDao
 import com.example.dymessagelite.data.datasource.dao.MegDao
-import com.example.dymessagelite.data.model.ChatEntity
-import com.example.dymessagelite.data.model.MegEntity
+import com.example.dymessagelite.data.model.detail.ChatEntity
+import com.example.dymessagelite.data.model.list.MegEntity
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlin.math.log
 import kotlin.random.Random
 
-@Database(entities = [ChatEntity::class, MegEntity::class], version = 2)
+@Database(entities = [ChatEntity::class, MegEntity::class], version = 3)
 abstract class ChatDatabase : RoomDatabase() {
     abstract fun chatDao(): ChatDao
     abstract fun megDao(): MegDao
@@ -44,6 +39,13 @@ abstract class ChatDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE ChatEntity ADD COLUMN type INTEGER NOT NULL DEFAULT 0")
                 db.execSQL("ALTER TABLE MegEntity ADD COLUMN type INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+        val MIGRATION_2_3 = object : Migration(2,3){
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE ChatEntity ADD COLUMN isDisplay INTEGER NOT NULL DEFAULT false")
+                db.execSQL("ALTER TABLE ChatEntity ADD COLUMN isClick INTEGER NOT NULL DEFAULT false")
+                db.execSQL("ALTER TABLE ChatEntity ADD COLUMN isRead INTEGER NOT NULL DEFAULT false")
             }
         }
 
@@ -66,7 +68,7 @@ abstract class ChatDatabase : RoomDatabase() {
                 DATABASE_NAME
             )
                 .addCallback(DatabaseCallback(context))
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2,MIGRATION_2_3)
                 .build()
             return instance;
         }

@@ -6,18 +6,26 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.dymessagelite.data.model.ChatType
-import com.example.dymessagelite.data.model.MegDetailCell
+import com.example.dymessagelite.data.model.detail.ChatType
+import com.example.dymessagelite.data.model.detail.MegDetailCell
+import com.example.dymessagelite.data.model.list.DisplayListItem
 import com.example.dymessagelite.databinding.ItemDetailButtonOtherBinding
 import com.example.dymessagelite.databinding.ItemDetailImageMineBinding
 import com.example.dymessagelite.databinding.ItemDetailImageOtherBinding
 
 import com.example.dymessagelite.databinding.ItemDetailTextMineBinding
 import com.example.dymessagelite.databinding.ItemDetailTextOtherBinding
+import com.example.dymessagelite.ui.detail.MegDetailControl
+
+
+interface OnClickDetailAdapterListener{
+    fun onItemClick(item: MegDetailCell)
+}
 
 class MegDetailAdapter(
     private val myAvatarId: Int,
-    private val otherAvatarId: Int
+    private val otherAvatarId: Int,
+    private val megDetailControl: MegDetailControl
 ) : ListAdapter<MegDetailCell, RecyclerView.ViewHolder>(ChatDiffCallback()) {
     companion object {
         private const val VIEW_TYPE_MINE_TEXT = 1
@@ -108,6 +116,18 @@ class MegDetailAdapter(
             is OtherTextViewHolder -> holder.bind(item)
             is OtherImageViewHolder -> holder.bind(item)
             is OtherButtonViewHolder -> holder.bind(item)
+        }
+    }
+
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        val position = holder.bindingAdapterPosition
+        if(position != RecyclerView.NO_POSITION){
+            val item = getItem(position)
+            if(!item.isDisplay){
+                megDetailControl.markAsDisplay(item.id)
+                megDetailControl.markAsRead(item.id)
+            }
         }
     }
 

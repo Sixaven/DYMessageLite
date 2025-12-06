@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <layer-list>
+            <!-- 蒙层底层（固定48dp，居中） -->
+            <item
+                android:width="48dp"
+                android:height="48dp"
+                android:gravity="center">
+                <shape android:shape="oval">
+                    <solid android:color="#4D000000" />
+                    <corners android:radius="24dp" />
+                </shape>
+            </item>
+            <!-- 图标上层（24dp，居中） -->
+            <item
+                android:width="24dp"
+                android:height="24dp"
+                android:gravity="center"
+                android:start="8dp"
+                android:drawable="@drawable/arrow_back" />
+        </layer-list>
+    </item>
+</selector>

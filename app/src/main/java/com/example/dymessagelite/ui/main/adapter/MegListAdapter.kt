@@ -1,29 +1,40 @@
 package com.example.dymessagelite.ui.main.adapter
 
+import android.graphics.Color
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dymessagelite.R
 
-import com.example.dymessagelite.data.model.DisplayListItem
-import com.example.dymessagelite.data.model.DisplayType
-import com.example.dymessagelite.data.model.MegItem
-import com.example.dymessagelite.data.model.MegType
+import com.example.dymessagelite.data.model.list.DisplayListItem
+import com.example.dymessagelite.data.model.list.DisplayType
+
+import com.example.dymessagelite.data.model.list.MegType
 
 
 import com.example.dymessagelite.databinding.ItemMessageButtonBinding
 import com.example.dymessagelite.databinding.ItemMessageImageBinding
 import com.example.dymessagelite.databinding.ItemMessageSearchBinding
 import com.example.dymessagelite.databinding.ItemMessageTextBinding
-
+import java.util.regex.Pattern
+interface OnClickListAdapterListener{
+    fun onItemClick(item: DisplayListItem)
+    fun onAvatarClick(item: DisplayListItem)
+    fun onButtonActionClick(item: DisplayListItem)
+}
 class MegListAdapter (
-    private val onItemClick: (DisplayListItem) -> Unit
+    private val listener: OnClickListAdapterListener
 )
     : ListAdapter<DisplayListItem,RecyclerView.ViewHolder>(DiffCallback()){
+
+    private var searchKeyword: String = ""
 
     companion object {
 
@@ -39,7 +50,13 @@ class MegListAdapter (
             itemView.setOnClickListener {
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    onItemClick(getItem(position))
+                    listener.onItemClick(getItem(position))
+                }
+            }
+            binding.ivAvatar.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onAvatarClick(getItem(position))
                 }
             }
         }
@@ -58,7 +75,13 @@ class MegListAdapter (
             itemView.setOnClickListener {
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    onItemClick(getItem(position))
+                    listener.onItemClick(getItem(position))
+                }
+            }
+            binding.ivAvatar.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onAvatarClick(getItem(position))
                 }
             }
         }
@@ -79,16 +102,29 @@ class MegListAdapter (
             itemView.setOnClickListener {
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    onItemClick(getItem(position))
+                    listener.onItemClick(getItem(position))
                 }
             }
+            binding.ivAvatar.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onAvatarClick(getItem(position))
+                }
+            }
+            binding.btnSummaryAction.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onButtonActionClick(getItem(position))
+                }
+            }
+
         }
 
         fun bind(item: DisplayListItem) {
             binding.tvNickname.text = item.name
             binding.btnSummaryAction.text = item.context // 按钮上的文字
             binding.tvTime.text = item.timestamp
-            binding.tvUnreadBadge.visibility = View.GONE
+            updateBadge(binding.root, item.unreadCount)
         }
     }
     inner class SearchResultViewHolder(val binding: ItemMessageSearchBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -96,15 +132,21 @@ class MegListAdapter (
             itemView.setOnClickListener {
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    onItemClick(getItem(position))
+                    listener.onItemClick(getItem(position))
+                }
+            }
+            binding.ivAvatar.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onAvatarClick(getItem(position))
                 }
             }
         }
         fun bind(item: DisplayListItem) {
-            binding.tvNickname.text = item.name
+            binding.tvNickname.text = highlightKeyword(item.name,searchKeyword, Color.RED)
             // 这里可以加载图片，例如使用 Glide
             // Glide.with(itemView.context).load(item.imageUrl).into(binding.ivSummaryImage)
-            binding.tvContent.text = item.context
+            binding.tvContent.text = highlightKeyword(item.context,searchKeyword, Color.RED)
             binding.tvTime.text = item.timestamp
         }
     }
@@ -165,6 +207,28 @@ class MegListAdapter (
         }else{
             throw IllegalArgumentException("Invalid view type")
         }
+    }
+    fun setHighlightKeyword(keyword: String) {
+        this.searchKeyword = keyword
+    }
+    private fun highlightKeyword(text: String, keyword: String, highlightColor: Int): SpannableString {
+        val spannableString = SpannableString(text)
+        if (keyword.isBlank() || !text.contains(keyword, ignoreCase = true)) {
+            return spannableString // 如果关键词为空或文本不包含关键词，直接返回
+        }
+
+        // 使用正则表达式进行不区分大小写的匹配
+        val pattern = Pattern.compile(Pattern.quote(keyword), Pattern.CASE_INSENSITIVE)
+        val matcher = pattern.matcher(text)
+
+        while (matcher.find()) {
+            val start = matcher.start()
+            val end = matcher.end()
+            // 设置高亮效果
+            spannableString.setSpan(ForegroundColorSpan(highlightColor), start, end, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+
+        return spannableString
     }
 }
 class DiffCallback : DiffUtil.ItemCallback<DisplayListItem>() {

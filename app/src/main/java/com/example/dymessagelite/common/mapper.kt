@@ -1,15 +1,14 @@
 package com.example.dymessagelite.common
 
 import android.icu.util.Calendar
-import com.example.dymessagelite.data.model.ChatEntity
-import com.example.dymessagelite.data.model.DisplayListItem
-import com.example.dymessagelite.data.model.MegDetailCell
-import com.example.dymessagelite.data.model.MegEntity
-import com.example.dymessagelite.data.model.MegItem
+import com.example.dymessagelite.data.model.detail.ChatEntity
+import com.example.dymessagelite.data.model.list.DisplayListItem
+import com.example.dymessagelite.data.model.detail.MegDetailCell
+import com.example.dymessagelite.data.model.list.MegEntity
+import com.example.dymessagelite.data.model.list.MegItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.text.format
 
 fun MegEntity.toMegItem(): MegItem {
     return MegItem(
@@ -28,7 +27,10 @@ fun ChatEntity.toMegDetailCell(): MegDetailCell {
         content = this.content,
         timestamp = this.timestamp.toString(),
         isMine = this.isMine,
-        type = type
+        type = type,
+        isDisplay = isDisplay,
+        isClick = isClick,
+        isRead = isRead
     )
 }
 fun List<MegEntity>.toMegItems(): List<MegItem> {

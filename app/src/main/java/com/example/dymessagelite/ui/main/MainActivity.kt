@@ -4,7 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.MotionEvent
+import android.view.View
 import android.widget.EditText
+import androidx.activity.enableEdgeToEdge
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -12,33 +14,33 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dymessagelite.common.toDisplayListItems
 import com.example.dymessagelite.common.tracker.AppStateTracker
-import com.example.dymessagelite.common.util.JsonUtils
 import com.example.dymessagelite.common.util.dpToPx
-import com.example.dymessagelite.data.datasource.dao.MegDao
 import com.example.dymessagelite.data.datasource.database.ChatDatabase
-import com.example.dymessagelite.data.model.DisplayType
-import com.example.dymessagelite.data.model.MegEntity
-import com.example.dymessagelite.data.model.MegItem
-import com.example.dymessagelite.data.model.MegType
+import com.example.dymessagelite.data.model.list.DisplayListItem
+import com.example.dymessagelite.data.model.list.DisplayType
+import com.example.dymessagelite.data.model.list.MegItem
 import com.example.dymessagelite.data.repository.ChatRepository
 import com.example.dymessagelite.data.repository.MegDispatcherRepository
 import com.example.dymessagelite.data.repository.MegListRepository
+import com.example.dymessagelite.data.repository.SearchRepository
 import com.example.dymessagelite.databinding.ActivityMainBinding
+import com.example.dymessagelite.ui.dashboard.DashboardActivity
 import com.example.dymessagelite.ui.detail.MessageDetailActivity
 import com.example.dymessagelite.ui.main.adapter.MegListAdapter
-import com.google.gson.reflect.TypeToken
+import com.example.dymessagelite.ui.main.adapter.OnClickListAdapterListener
 
 interface MessageListView {
-    fun getMegListOrLoadMore(data: List<MegItem>)
+    fun firstGetMegList(data: List<MegItem>)
+    fun loadMoreMegList(data: List<MegItem>)
     fun loadEmpty()
     fun receiveMegChangeByOther(data: List<MegItem>)
     fun jumpDetail(data: List<MegItem>)
     fun receiveMegChangeByMine(data: List<MegItem>)
-    fun displaySearchResult(resList: List<MegItem>)
+    fun displaySearchResult(resList: List<MegItem>,keyword: String)
     fun backFromSearch(data: List<MegItem>)
 }
 
-class MainActivity : AppCompatActivity(), MessageListView {
+class MainActivity : AppCompatActivity(), MessageListView, OnClickListAdapterListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var megAdapter: MegListAdapter
     private lateinit var megControl: MegListControl
@@ -60,11 +62,12 @@ class MainActivity : AppCompatActivity(), MessageListView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
 
+        initControl()
         initAdapter()
         initRecyclerView()
         setupRefreshAndLoadMore()
@@ -72,7 +75,7 @@ class MainActivity : AppCompatActivity(), MessageListView {
         setSwitchListener()
         setSearchBarListener()
 
-        initControl()
+
 
         megControl.onStart()
     }
@@ -102,6 +105,10 @@ class MainActivity : AppCompatActivity(), MessageListView {
         val chatDao = database.chatDao()
 
         val megListRepository = MegListRepository(megDao)
+        val searchRepository = SearchRepository(
+            megDao,
+            chatDao
+        )
         val chatRepository = ChatRepository.getInstance(chatDao, megDao)
 
         megDispatcherRepository = MegDispatcherRepository.getInstance(megDao, chatDao, this)
@@ -110,6 +117,7 @@ class MainActivity : AppCompatActivity(), MessageListView {
             megListRepository,
             megDispatcherRepository,
             chatRepository,
+            searchRepository,
             this
         )
         megDispatcherControl = MegDispatcherControl(
@@ -119,9 +127,7 @@ class MainActivity : AppCompatActivity(), MessageListView {
 
     private fun setupRefreshAndLoadMore() {
         binding.smartRefreshLayout.setOnRefreshListener { refreshLayout ->
-            binding.root.postDelayed({
-                refreshLayout.finishRefresh()
-            }, 1200)
+            megControl.firstGet()
         }
 
         binding.smartRefreshLayout.setOnLoadMoreListener { refreshLayout ->
@@ -142,16 +148,9 @@ class MainActivity : AppCompatActivity(), MessageListView {
     }
 
     private fun initAdapter() {
-        megAdapter = MegListAdapter { item ->
-            if(item.contentType == MegType.ACTION) return@MegListAdapter
-
-            val intent = Intent(this@MainActivity, MessageDetailActivity::class.java)
-            megControl.jumpDetail(item.name)
-            intent.putExtra("nickname", item.name)
-            intent.putExtra("headImage", item.avatar)
-            startActivity(intent)
-        }
+        megAdapter = MegListAdapter(this)
     }
+
 
     private fun initRecyclerView() {
 
@@ -197,12 +196,45 @@ class MainActivity : AppCompatActivity(), MessageListView {
         binding.recyclerViewMessages.smoothScrollToPosition(0)
     }
 
-    override fun getMegListOrLoadMore(data: List<MegItem>) {
+    override fun onAvatarClick(item: DisplayListItem) {
+        val intent = Intent(this@MainActivity, DashboardActivity::class.java)
+        intent.putExtra("nickname", item.name)
+        intent.putExtra("headImage", item.avatar)
+        startActivity(intent)
+    }
+
+    override fun onButtonActionClick(item: DisplayListItem) {
+        val intent = Intent(this@MainActivity, DashboardActivity::class.java)
+        intent.putExtra("nickname", item.name)
+        intent.putExtra("headImage", item.avatar)
+        startActivity(intent)
+    }
+
+    override fun onItemClick(item: DisplayListItem) {
+        val intent = Intent(this@MainActivity, MessageDetailActivity::class.java)
+        megControl.jumpDetail(item.name)
+        intent.putExtra("nickname", item.name)
+        intent.putExtra("headImage", item.avatar)
+        startActivity(intent)
+    }
+
+    //View方法重写
+    override fun firstGetMegList(data: List<MegItem>) {
+        if(data.isEmpty()){
+            showEmptyState("暂无消息")
+            binding.searchEditText.visibility = View.GONE
+        }else{
+            hideEmptyState()
+            val displayList = data.toDisplayListItems(DisplayType.DEFAULT)
+            megAdapter.submitList(displayList.toList())
+        }
+        binding.smartRefreshLayout.finishRefresh()
+    }
+    override fun loadMoreMegList(data: List<MegItem>) {
         val displayList = data.toDisplayListItems(DisplayType.DEFAULT)
         megAdapter.submitList(displayList.toList())
         binding.smartRefreshLayout.finishLoadMore()
     }
-
     override fun loadEmpty() {
         binding.smartRefreshLayout.finishLoadMoreWithNoMoreData()
     }
@@ -221,17 +253,39 @@ class MainActivity : AppCompatActivity(), MessageListView {
     }
 
     override fun jumpDetail(data: List<MegItem>) {
+
         val displayList = data.toDisplayListItems(DisplayType.DEFAULT)
         megAdapter.submitList(displayList.toList())
     }
 
-    override fun displaySearchResult(resList: List<MegItem>) {
+    override fun displaySearchResult(resList: List<MegItem>, keyword: String) {
         val displayList = resList.toDisplayListItems(DisplayType.SEARCH)
-        megAdapter.submitList(displayList.toList())
+        if(displayList.isEmpty()){
+            showEmptyState("找不到相关内容")
+        }else{
+            hideEmptyState()
+            megAdapter.setHighlightKeyword(keyword)
+            megAdapter.submitList(displayList.toList())
+        }
     }
 
     override fun backFromSearch(data: List<MegItem>) {
+        hideEmptyState()
         val displayList = data.toDisplayListItems(DisplayType.DEFAULT)
         megAdapter.submitList(displayList.toList())
     }
+
+
+    private fun showEmptyState(message: String) {
+        // 现在是控制 RecyclerView 和 empty_state_layout 的可见性
+        // 而它们的父容器 SmartRefreshLayout 保持可见
+        binding.recyclerViewMessages.visibility = View.GONE
+        binding.emptyStateLayout.visibility = View.VISIBLE
+        binding.emptyText.text = message
+    }
+    private fun hideEmptyState() {
+        binding.recyclerViewMessages.visibility = View.VISIBLE
+        binding.emptyStateLayout.visibility = View.GONE
+    }
+
 }

@@ -1,24 +1,18 @@
 package com.example.dymessagelite.data.repository
 
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import com.example.dymessagelite.common.observer.EventType
 import com.example.dymessagelite.common.observer.Observer
 import com.example.dymessagelite.common.observer.Subject
 import com.example.dymessagelite.data.datasource.dao.ChatDao
 import com.example.dymessagelite.data.datasource.dao.MegDao
 import com.example.dymessagelite.data.datasource.database.ChatDatabase
-import com.example.dymessagelite.data.model.ChatEntity
-import com.example.dymessagelite.data.model.ChatEvent
-import com.example.dymessagelite.data.model.MegDetailCell
-import com.example.dymessagelite.data.model.MegEntity
-import kotlinx.coroutines.CoroutineScope
+import com.example.dymessagelite.data.model.detail.ChatEntity
+import com.example.dymessagelite.data.model.detail.ChatEvent
+import com.example.dymessagelite.data.model.detail.ChatMarkType
+import com.example.dymessagelite.data.model.list.MegEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.concurrent.thread
 
 class ChatRepository private constructor(
     private val chatDao: ChatDao,
@@ -54,6 +48,29 @@ class ChatRepository private constructor(
             withContext(Dispatchers.Main) {
                 notifyObservers(chatEvent, EventType.SEND_CHAT_MINE)
             }
+        }
+    }
+
+    suspend fun markChat(chatId: Int,markType: Int){
+        val oldChat = chatDao.getChatById(chatId)
+        if(oldChat != null) {
+            when(markType){
+                ChatMarkType.DISPLAY -> {
+                    val newChat = oldChat.copy(isDisplay = true)
+                    chatDao.updateChat(newChat)
+                }
+                ChatMarkType.CLICK -> {
+                    val newChat = oldChat.copy(isClick = true)
+                    chatDao.updateChat(newChat)
+                }
+                ChatMarkType.READ -> {
+                    val newChat = oldChat.copy(isRead = true)
+                    chatDao.updateChat(newChat)
+                }
+                else -> {}
+            }
+        }else{
+            throw Exception("Chat not found")
         }
     }
 

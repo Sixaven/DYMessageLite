@@ -5,18 +5,17 @@ import com.example.dymessagelite.common.observer.Observer
 import com.example.dymessagelite.common.toMegDetailCell
 import com.example.dymessagelite.common.toMegDetailCellList
 import com.example.dymessagelite.common.tracker.AppStateTracker
-import com.example.dymessagelite.data.datasource.database.ChatDatabase
-import com.example.dymessagelite.data.model.ChatEntity
-import com.example.dymessagelite.data.model.ChatEvent
-import com.example.dymessagelite.data.model.ChatType
-import com.example.dymessagelite.data.model.MegDetailCell
-import com.example.dymessagelite.data.model.MegDispatcherEvent
+import com.example.dymessagelite.data.model.detail.ChatEntity
+import com.example.dymessagelite.data.model.detail.ChatEvent
+import com.example.dymessagelite.data.model.detail.ChatMarkType
+import com.example.dymessagelite.data.model.detail.ChatType
+import com.example.dymessagelite.data.model.detail.MegDetailCell
+import com.example.dymessagelite.data.model.dispatcher.MegDispatcherEvent
 import com.example.dymessagelite.data.repository.ChatRepository
 import com.example.dymessagelite.data.repository.MegDispatcherRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
@@ -84,7 +83,10 @@ class MegDetailControl(
                 timestamp = System.currentTimeMillis(),
                 isMine = true,
                 senderId = senderId,
-                type = ChatType.TEXT
+                type = ChatType.TEXT,
+                isDisplay = false,
+                isClick = false,
+                isRead = false
             )
             chatRepository.sendMeg(newMessage)
         }
@@ -102,6 +104,22 @@ class MegDetailControl(
                 }
             }
             else -> {}
+        }
+    }
+
+    fun markAsDisplay(chatId: Int){
+        scope.launch {
+            chatRepository.markChat(chatId, ChatMarkType.DISPLAY)
+        }
+    }
+    fun markAsRead(chatId: Int){
+        scope.launch {
+            chatRepository.markChat(chatId, ChatMarkType.READ)
+        }
+    }
+    fun markAsClick(chatId: Int){
+        scope.launch {
+            chatRepository.markChat(chatId, ChatMarkType.CLICK)
         }
     }
 

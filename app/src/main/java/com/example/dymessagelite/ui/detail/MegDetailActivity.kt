@@ -2,17 +2,19 @@ package com.example.dymessagelite.ui.detail
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dymessagelite.R
 import com.example.dymessagelite.common.tracker.AppStateTracker
 import com.example.dymessagelite.data.datasource.database.ChatDatabase
-import com.example.dymessagelite.data.model.MegDetailCell
+import com.example.dymessagelite.data.model.detail.MegDetailCell
 import com.example.dymessagelite.data.repository.ChatRepository
 import com.example.dymessagelite.data.repository.MegDispatcherRepository
 import com.example.dymessagelite.databinding.ActivityMessageDetailBinding
 import com.example.dymessagelite.ui.detail.adapter.MegDetailAdapter
+import com.example.dymessagelite.ui.detail.adapter.OnClickDetailAdapterListener
 import java.lang.Exception
 
 
@@ -23,7 +25,8 @@ interface MessageDetailView {
     fun displaySendMeg(chat: MegDetailCell)
 }
 
-class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, MessageDetailView {
+class MessageDetailActivity :
+    AppCompatActivity(), View.OnClickListener, MessageDetailView, OnClickDetailAdapterListener {
     private lateinit var binding: ActivityMessageDetailBinding
     private lateinit var megDispatcherRepository: MegDispatcherRepository
     private lateinit var megDetailAdapter: MegDetailAdapter
@@ -46,14 +49,15 @@ class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, Message
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityMessageDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         recevieIntent()
+        initControl()
         initToolBar()
         initRecycleView()
-
-        initControl()
         setInputAndButtonListener()
 
         megDetailControl.onStart()
@@ -84,7 +88,11 @@ class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, Message
     }
 
     fun initRecycleView() {
-        megDetailAdapter = MegDetailAdapter(R.drawable.myhead, R.drawable.myhead)
+        megDetailAdapter = MegDetailAdapter(
+            R.drawable.myhead,
+            R.drawable.myhead,
+            megDetailControl
+        )
         megDetailAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
@@ -120,15 +128,7 @@ class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, Message
     }
 
     fun setInputAndButtonListener() {
-//        binding.etInputMessage.setOnFocusChangeListener { view, hasFocus ->
-//            if (hasFocus) {
-//                view.postDelayed({
-//                    scrollToBottom()
-//                }, 200)
-//            }
-//        }
         binding.etInputMessage.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
-
             binding.recyclerViewChat.postDelayed({
                 scrollToBottom()
             },200)
@@ -158,6 +158,10 @@ class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, Message
         }
     }
 
+    override fun onItemClick(item: MegDetailCell) {
+        megDetailControl.markAsClick(item.id)
+    }
+
     override fun displayChatList(chatList: List<MegDetailCell>) {
         megDetailAdapter.submitList(chatList)
     }
@@ -174,5 +178,6 @@ class MessageDetailActivity : AppCompatActivity(), View.OnClickListener, Message
             binding.recyclerViewChat.smoothScrollToPosition(itemCount - 1)
         }
     }
+
 }
 

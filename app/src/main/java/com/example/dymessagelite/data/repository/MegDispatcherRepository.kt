@@ -8,12 +8,11 @@ import com.example.dymessagelite.common.tracker.AppStateTracker
 import com.example.dymessagelite.common.util.JsonUtils
 import com.example.dymessagelite.data.datasource.dao.ChatDao
 import com.example.dymessagelite.data.datasource.dao.MegDao
-import com.example.dymessagelite.data.model.ChatEntity
-import com.example.dymessagelite.data.model.ChatType
-import com.example.dymessagelite.data.model.MegDispatcherEvent
-import com.example.dymessagelite.data.model.MegEntity
-import com.example.dymessagelite.data.model.MegItem
-import com.example.dymessagelite.data.model.MegType
+import com.example.dymessagelite.data.model.detail.ChatEntity
+import com.example.dymessagelite.data.model.detail.ChatType
+import com.example.dymessagelite.data.model.dispatcher.MegDispatcherEvent
+import com.example.dymessagelite.data.model.list.MegEntity
+import com.example.dymessagelite.data.model.list.MegType
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
@@ -73,7 +72,10 @@ class MegDispatcherRepository private constructor(
                         isMine = false,
                         timestamp = System.currentTimeMillis(),
                         content = content,
-                        type = randomMegType
+                        type = randomMegType,
+                        isRead = false,
+                        isClick = false,
+                        isDisplay = false
                     )
 
                     megDao.insertOrUpdateMeg(megEntity)
