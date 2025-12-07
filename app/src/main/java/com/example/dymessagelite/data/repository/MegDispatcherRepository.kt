@@ -65,7 +65,8 @@ class MegDispatcherRepository private constructor(
                         latestMessage = content,
                         timestamp = System.currentTimeMillis(),
                         unreadCount = oldMeg.unreadCount,
-                        type = randomMegType
+                        type = randomMegType,
+                        remark = oldMeg.remark
                     )
                     val chatEntity = ChatEntity(
                         senderId = oldMeg.name,

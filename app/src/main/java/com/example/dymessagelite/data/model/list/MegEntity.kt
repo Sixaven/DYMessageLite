@@ -20,7 +20,9 @@ data class MegEntity (
     val timestamp: Long,
     var unreadCount: Int,
     @ColumnInfo(defaultValue = "0")
-    val type: Int
+    val type: Int,
+    @ColumnInfo(defaultValue = "NULL")
+    val remark: String? = null
 )
 
 

@@ -5,11 +5,13 @@ import com.example.dymessagelite.common.observer.Observer
 import com.example.dymessagelite.common.toMegItem
 import com.example.dymessagelite.common.toMegItems
 import com.example.dymessagelite.common.tracker.AppStateTracker
+import com.example.dymessagelite.data.model.dashboard.DashboardEvent
 import com.example.dymessagelite.data.model.detail.ChatEvent
 import com.example.dymessagelite.data.model.dispatcher.MegDispatcherEvent
 import com.example.dymessagelite.data.model.list.MegEntity
 import com.example.dymessagelite.data.model.list.MegItem
 import com.example.dymessagelite.data.repository.ChatRepository
+import com.example.dymessagelite.data.repository.DashboardRepository
 import com.example.dymessagelite.data.repository.MegDispatcherRepository
 import com.example.dymessagelite.data.repository.MegListRepository
 import com.example.dymessagelite.data.repository.SearchRepository
@@ -25,6 +27,7 @@ class MegListControl(
     private val megDispatcherRepository: MegDispatcherRepository,
     private val chatRepository: ChatRepository,
     private val searchRepository: SearchRepository,
+    private val dashboardRepository: DashboardRepository,
     private val view: MessageListView
 ){
     private var curPage = 1;
@@ -114,12 +117,30 @@ class MegListControl(
             }
         }
     }
+    
+    private val dashboardObserver = object : Observer<DashboardEvent>{
+        override fun update(data: DashboardEvent, eventType: EventType) {
+            when (eventType) {
+                EventType.UPDATE_NICKNAME -> {
+                    val oldIndex = allMegList.indexOfFirst { it.name == data.senderId }
+                    if(oldIndex != -1){
+                        allMegList[oldIndex].remark = data.remark
+                        view.updateNickName(allMegList)
+                    }else{
+                        throw Exception("updateItemBySenderId error: item with id ${data.senderId} not found")
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
 
     fun onStart(){
         megListRepository.addObserver(this.listObserver)
         megDispatcherRepository.addObserver(this.dispatcherObserver)
         chatRepository.addObserver(this.chatObserver)
         searchRepository.addObserver(this.searchObserver)
+        dashboardRepository.addObserver(dashboardObserver)
         isLoading = true;
         isLastPage = false;
         curPage = 1;
@@ -143,6 +164,7 @@ class MegListControl(
         searchRepository.removeObserver(this.searchObserver)
         megDispatcherRepository.removeObserver(this.dispatcherObserver)
         chatRepository.removeObserver(this.chatObserver)
+        dashboardRepository.removeObserver(dashboardObserver)
     }
     fun jumpDetail(senderId: String){
         this.senderId = senderId;
@@ -200,6 +222,31 @@ class MegListControl(
             allMegList.removeAt(oldIndex)
         }
         allMegList.add(0, newItem)
+    }
+
+    fun updateItemBySenderId(senderId: String, newSummary: String? = null, newTimestamp: String? = null, newUnreadCount: Int? = null) {
+        // 1. 根据 senderId 找到 item 在列表中的索引
+        val index = allMegList.indexOfFirst { it.id == senderId }
+
+        // 2. 如果找到了 (index != -1)
+        if (index != -1) {
+            // 3. 获取旧的 item
+            val oldItem = allMegList[index]
+
+            // 4. 使用 copy 方法创建新 item，只修改需要变的属性
+            //    如果某个参数为 null，copy 方法会保留旧值
+            val newItem = oldItem.copy(
+                summary = newSummary ?: oldItem.summary,
+                timestamp = newTimestamp ?: oldItem.timestamp,
+                unreadCount = newUnreadCount ?: oldItem.unreadCount
+            )
+
+            // 5. 用新 item 替换掉列表中的旧 item
+            allMegList[index] = newItem
+        } else {
+            // 如果没找到，可以根据需要抛出异常或打印日志
+            // throw Exception("updateItemBySenderId error: item with id $senderId not found")
+        }
     }
 
 }

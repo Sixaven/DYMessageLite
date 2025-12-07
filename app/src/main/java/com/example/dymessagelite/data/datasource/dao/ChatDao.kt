@@ -2,10 +2,12 @@ package com.example.dymessagelite.data.datasource.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.dymessagelite.data.model.detail.ChatEntity
 import com.example.dymessagelite.data.model.detail.ChatType
+import com.example.dymessagelite.data.model.list.MegEntity
 
 @Dao
 interface ChatDao {
@@ -14,8 +16,8 @@ interface ChatDao {
     @Insert
     suspend fun insertChat(chat: ChatEntity)
 
-    @Update
-    suspend fun updateChat(chat: ChatEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateChat(meg: ChatEntity)
 
     @Query("select * from ChatEntity where id = :chatId")
     suspend fun getChatById(chatId: Int): ChatEntity?

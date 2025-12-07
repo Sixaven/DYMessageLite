@@ -1,5 +1,6 @@
 package com.example.dymessagelite.ui.main
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
@@ -20,14 +21,17 @@ import com.example.dymessagelite.data.model.list.DisplayListItem
 import com.example.dymessagelite.data.model.list.DisplayType
 import com.example.dymessagelite.data.model.list.MegItem
 import com.example.dymessagelite.data.repository.ChatRepository
+import com.example.dymessagelite.data.repository.DashboardRepository
 import com.example.dymessagelite.data.repository.MegDispatcherRepository
 import com.example.dymessagelite.data.repository.MegListRepository
 import com.example.dymessagelite.data.repository.SearchRepository
 import com.example.dymessagelite.databinding.ActivityMainBinding
 import com.example.dymessagelite.ui.dashboard.DashboardActivity
+import com.example.dymessagelite.ui.detail.MegDetailControl
 import com.example.dymessagelite.ui.detail.MessageDetailActivity
 import com.example.dymessagelite.ui.main.adapter.MegListAdapter
 import com.example.dymessagelite.ui.main.adapter.OnClickListAdapterListener
+import com.hjq.toast.Toaster
 
 interface MessageListView {
     fun firstGetMegList(data: List<MegItem>)
@@ -38,6 +42,7 @@ interface MessageListView {
     fun receiveMegChangeByMine(data: List<MegItem>)
     fun displaySearchResult(resList: List<MegItem>,keyword: String)
     fun backFromSearch(data: List<MegItem>)
+    fun updateNickName(data: List<MegItem>)
 }
 
 class MainActivity : AppCompatActivity(), MessageListView, OnClickListAdapterListener {
@@ -46,6 +51,11 @@ class MainActivity : AppCompatActivity(), MessageListView, OnClickListAdapterLis
     private lateinit var megControl: MegListControl
     private lateinit var megDispatcherRepository: MegDispatcherRepository
     private lateinit var megDispatcherControl: MegDispatcherControl
+
+    private lateinit var chatRepository: ChatRepository
+    private lateinit var dashboardRepository: DashboardRepository
+
+
 
     override fun onResume() {
         super.onResume()
@@ -62,6 +72,7 @@ class MainActivity : AppCompatActivity(), MessageListView, OnClickListAdapterLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
 
@@ -109,7 +120,8 @@ class MainActivity : AppCompatActivity(), MessageListView, OnClickListAdapterLis
             megDao,
             chatDao
         )
-        val chatRepository = ChatRepository.getInstance(chatDao, megDao)
+        dashboardRepository = DashboardRepository.getInstance(chatDao,megDao)
+        chatRepository = ChatRepository.getInstance(chatDao, megDao)
 
         megDispatcherRepository = MegDispatcherRepository.getInstance(megDao, chatDao, this)
 
@@ -118,6 +130,7 @@ class MainActivity : AppCompatActivity(), MessageListView, OnClickListAdapterLis
             megDispatcherRepository,
             chatRepository,
             searchRepository,
+            dashboardRepository,
             this
         )
         megDispatcherControl = MegDispatcherControl(
@@ -197,24 +210,36 @@ class MainActivity : AppCompatActivity(), MessageListView, OnClickListAdapterLis
     }
 
     override fun onAvatarClick(item: DisplayListItem) {
+        binding.searchEditText.text.clear()
         val intent = Intent(this@MainActivity, DashboardActivity::class.java)
         intent.putExtra("nickname", item.name)
         intent.putExtra("headImage", item.avatar)
+        if(item.remark != null){
+         intent.putExtra("remark",item.remark)
+        }
         startActivity(intent)
     }
 
     override fun onButtonActionClick(item: DisplayListItem) {
+        binding.searchEditText.text.clear()
         val intent = Intent(this@MainActivity, DashboardActivity::class.java)
         intent.putExtra("nickname", item.name)
         intent.putExtra("headImage", item.avatar)
+        if(item.remark != null){
+            intent.putExtra("remark",item.remark)
+        }
         startActivity(intent)
     }
 
     override fun onItemClick(item: DisplayListItem) {
+        binding.searchEditText.text.clear()
         val intent = Intent(this@MainActivity, MessageDetailActivity::class.java)
         megControl.jumpDetail(item.name)
         intent.putExtra("nickname", item.name)
         intent.putExtra("headImage", item.avatar)
+        if(item.remark != null){
+            intent.putExtra("remark",item.remark)
+        }
         startActivity(intent)
     }
 
@@ -267,6 +292,11 @@ class MainActivity : AppCompatActivity(), MessageListView, OnClickListAdapterLis
             megAdapter.setHighlightKeyword(keyword)
             megAdapter.submitList(displayList.toList())
         }
+    }
+
+    override fun updateNickName(data: List<MegItem>) {
+        val displayList = data.toDisplayListItems(DisplayType.DEFAULT)
+        megAdapter.submitList(displayList.toList())
     }
 
     override fun backFromSearch(data: List<MegItem>) {

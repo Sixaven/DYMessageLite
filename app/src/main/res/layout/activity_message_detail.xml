@@ -34,7 +34,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:id="@+id/chat_bar">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/iv_detail_avatar"

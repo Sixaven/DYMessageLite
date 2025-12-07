@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-@Database(entities = [ChatEntity::class, MegEntity::class], version = 3)
+@Database(entities = [ChatEntity::class, MegEntity::class], version = 4)
 abstract class ChatDatabase : RoomDatabase() {
     abstract fun chatDao(): ChatDao
     abstract fun megDao(): MegDao
@@ -48,6 +48,11 @@ abstract class ChatDatabase : RoomDatabase() {
                 db.execSQL("ALTER TABLE ChatEntity ADD COLUMN isRead INTEGER NOT NULL DEFAULT false")
             }
         }
+        val MIGRATION_3_4 = object : Migration(3,4){
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE MegEntity ADD COLUMN remark TEXT DEFAULT NULL ")
+            }
+        }
 
         fun getDatabase(
             context: Context
@@ -68,7 +73,7 @@ abstract class ChatDatabase : RoomDatabase() {
                 DATABASE_NAME
             )
                 .addCallback(DatabaseCallback(context))
-                .addMigrations(MIGRATION_1_2,MIGRATION_2_3)
+                .addMigrations(MIGRATION_1_2,MIGRATION_2_3,MIGRATION_3_4)
                 .build()
             return instance;
         }

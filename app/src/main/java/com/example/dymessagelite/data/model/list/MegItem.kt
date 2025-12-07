@@ -7,5 +7,6 @@ data class MegItem(
     val summary: String,
     val timestamp: String,
     var unreadCount: Int,
-    val type: Int
+    val type: Int,
+    var remark: String?
 )

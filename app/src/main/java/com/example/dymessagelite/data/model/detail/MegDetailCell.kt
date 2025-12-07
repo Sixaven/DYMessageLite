@@ -6,14 +6,13 @@ data class MegDetailCell(
     val timestamp: String,
     val isMine: Boolean,
     val type: Int,
-    val isDisplay: Boolean,
+    var isDisplay: Boolean,
     val isClick: Boolean,
-    val isRead: Boolean
+    var isRead: Boolean
 )
 
 object ChatMarkType{
-    const val DISPLAY: Int = 0
+    const val DISPLAY_OR_READ: Int = 0
     const val CLICK = 1
-    const val READ = 2
 }
 

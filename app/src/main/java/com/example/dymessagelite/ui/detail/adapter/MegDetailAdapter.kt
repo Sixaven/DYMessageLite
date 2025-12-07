@@ -18,14 +18,16 @@ import com.example.dymessagelite.databinding.ItemDetailTextOtherBinding
 import com.example.dymessagelite.ui.detail.MegDetailControl
 
 
-interface OnClickDetailAdapterListener{
+interface OnClickDetailAdapterListener {
     fun onItemClick(item: MegDetailCell)
+    fun onActionClick(item: MegDetailCell)
 }
 
 class MegDetailAdapter(
     private val myAvatarId: Int,
     private val otherAvatarId: Int,
-    private val megDetailControl: MegDetailControl
+    private val megDetailControl: MegDetailControl,
+    private val listener: OnClickDetailAdapterListener
 ) : ListAdapter<MegDetailCell, RecyclerView.ViewHolder>(ChatDiffCallback()) {
     companion object {
         private const val VIEW_TYPE_MINE_TEXT = 1
@@ -37,6 +39,7 @@ class MegDetailAdapter(
 
     inner class MineTextViewHolder(val binding: ItemDetailTextMineBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         fun bind(item: MegDetailCell) {
             binding.ivMyAvatar.setImageResource(myAvatarId)
             binding.tvMyMessageContent.text = item.content
@@ -45,6 +48,7 @@ class MegDetailAdapter(
 
     inner class MineImageViewHolder(val binding: ItemDetailImageMineBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         fun bind(item: MegDetailCell) {
             binding.ivMyAvatar.setImageResource(myAvatarId)
             binding.ivSummaryImage.setImageResource(myAvatarId)
@@ -55,6 +59,15 @@ class MegDetailAdapter(
 
     inner class OtherTextViewHolder(val binding: ItemDetailTextOtherBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.tvOtherMessageContent.setOnClickListener {
+                val position = bindingAdapterPosition
+                val item = getItem(position)
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(item)
+                }
+            }
+        }
         fun bind(item: MegDetailCell) {
             binding.ivOtherAvatar.setImageResource(otherAvatarId)
             binding.tvOtherMessageContent.text = item.content
@@ -63,6 +76,15 @@ class MegDetailAdapter(
 
     inner class OtherImageViewHolder(val binding: ItemDetailImageOtherBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.ivSummaryImage.setOnClickListener {
+                val position = bindingAdapterPosition
+                val item = getItem(position)
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(item)
+                }
+            }
+        }
         fun bind(item: MegDetailCell) {
             binding.ivOtherAvatar.setImageResource(otherAvatarId)
             binding.ivSummaryImage.setImageResource(otherAvatarId)
@@ -73,6 +95,15 @@ class MegDetailAdapter(
 
     inner class OtherButtonViewHolder(val binding: ItemDetailButtonOtherBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.tvOtherActionContent.setOnClickListener {
+                val position = bindingAdapterPosition
+                val item = getItem(position)
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onActionClick(item)
+                }
+            }
+        }
         fun bind(item: MegDetailCell) {
             binding.ivOtherAvatar.setImageResource(otherAvatarId)
             binding.tvOtherActionContent.text = item.content
@@ -87,22 +118,27 @@ class MegDetailAdapter(
                 val binding = ItemDetailTextMineBinding.inflate(inflater, parent, false)
                 MineTextViewHolder(binding)
             }
+
             VIEW_TYPE_MINE_IMAGE -> {
                 val binding = ItemDetailImageMineBinding.inflate(inflater, parent, false)
                 MineImageViewHolder(binding)
             }
+
             VIEW_TYPE_OTHER_TEXT -> {
                 val binding = ItemDetailTextOtherBinding.inflate(inflater, parent, false)
                 OtherTextViewHolder(binding)
             }
+
             VIEW_TYPE_OTHER_IMAGE -> {
                 val binding = ItemDetailImageOtherBinding.inflate(inflater, parent, false)
                 OtherImageViewHolder(binding)
             }
+
             VIEW_TYPE_OTHER_BUTTON -> {
                 val binding = ItemDetailButtonOtherBinding.inflate(inflater, parent, false)
                 OtherButtonViewHolder(binding)
             }
+
             else -> throw IllegalArgumentException("Invalid view type") // 异常处理
         }
     }
@@ -122,24 +158,28 @@ class MegDetailAdapter(
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         super.onViewAttachedToWindow(holder)
         val position = holder.bindingAdapterPosition
-        if(position != RecyclerView.NO_POSITION){
+        if (position != RecyclerView.NO_POSITION) {
             val item = getItem(position)
-            if(!item.isDisplay){
-                megDetailControl.markAsDisplay(item.id)
-                megDetailControl.markAsRead(item.id)
+            if(item.isMine) return;
+
+            if (!item.isDisplay || !item.isRead) {
+                item.isDisplay = true
+                item.isRead = true
+                megDetailControl.markAsDisplayAndRead(item.id)
             }
+
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         val cell = getItem(position)
         return if (cell.isMine) {
-            when(cell.type){
+            when (cell.type) {
                 ChatType.TEXT -> VIEW_TYPE_MINE_TEXT
                 else -> VIEW_TYPE_MINE_IMAGE
             }
         } else {
-            when(cell.type){
+            when (cell.type) {
                 ChatType.TEXT -> VIEW_TYPE_OTHER_TEXT
                 ChatType.IMAGE -> VIEW_TYPE_OTHER_IMAGE
                 else -> VIEW_TYPE_OTHER_BUTTON

@@ -62,7 +62,7 @@ class MegListAdapter (
         }
 
         fun bind(item: DisplayListItem) {
-            binding.tvNickname.text = item.name
+            binding.tvNickname.text = item.remark ?: item.name
             binding.tvSummary.text = item.context // 这是文本摘要
             binding.tvTime.text = item.timestamp
             updateBadge(binding.root, item.unreadCount) // 使用一个辅助方法来更新角标
@@ -87,7 +87,7 @@ class MegListAdapter (
         }
 
         fun bind(item: DisplayListItem) {
-            binding.tvNickname.text = item.name
+            binding.tvNickname.text = item.remark ?: item.name
             // 这里可以加载图片，例如使用 Glide
             // Glide.with(itemView.context).load(item.imageUrl).into(binding.ivSummaryImage)
             //binding.ivSummaryImage.setImageResource()
@@ -121,7 +121,7 @@ class MegListAdapter (
         }
 
         fun bind(item: DisplayListItem) {
-            binding.tvNickname.text = item.name
+            binding.tvNickname.text = item.remark ?: item.name
             binding.btnSummaryAction.text = item.context // 按钮上的文字
             binding.tvTime.text = item.timestamp
             updateBadge(binding.root, item.unreadCount)

@@ -8,7 +8,8 @@ data class DisplayListItem(
     val timestamp: String,
     val contentType: Int,
     val unreadCount: Int,
-    val displayType: Int
+    val displayType: Int,
+    val remark: String?
 )
 object DisplayType {
     const val DEFAULT = 0

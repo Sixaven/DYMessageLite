@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 1dp细边框 + 浅灰色（抖音按钮边框色） -->
+    <stroke android:width="1dp" android:color="#f5f5f5" />
+    <corners android:radius="4dp" />
+    <solid android:color="@android:color/transparent" />
+</shape>

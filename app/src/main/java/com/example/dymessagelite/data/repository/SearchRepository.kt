@@ -31,7 +31,8 @@ class SearchRepository(
                     latestMessage = it.content,
                     timestamp = it.timestamp,
                     unreadCount = meg.unreadCount,
-                    type = meg.type
+                    type = meg.type,
+                    remark = meg.remark
                 )
             }
         }

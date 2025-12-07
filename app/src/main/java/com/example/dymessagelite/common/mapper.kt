@@ -18,7 +18,8 @@ fun MegEntity.toMegItem(): MegItem {
         summary = latestMessage,
         timestamp = formatTimestampToString(timestamp),
         unreadCount = unreadCount,
-        type = type
+        type = type,
+        remark =remark
     )
 }
 fun ChatEntity.toMegDetailCell(): MegDetailCell {
@@ -53,7 +54,8 @@ fun MegItem.toDisplayListItem(type: Int): DisplayListItem{
         timestamp = this.timestamp,
         contentType = this.type,
         unreadCount = this.unreadCount,
-        displayType = type
+        displayType = type,
+        remark = remark
     )
 }
 fun List<MegItem>.toDisplayListItems(type: Int): List<DisplayListItem> {
