@@ -27,9 +27,8 @@
         android:textColor="@android:color/white"
         android:textSize="16sp"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@id/tv_summary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_summary"
+        app:layout_constraintTop_toTopOf="@id/btn_summary_action"
         tools:text="1"
         tools:visibility="visible" />
 
@@ -62,12 +61,10 @@
         android:paddingBottom="6dp"
         android:textColor="@android:color/white"
         android:textSize="18sp"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/tv_nickname"
         app:layout_constraintTop_toBottomOf="@id/tv_nickname"
-        tools:text="领取奖励"
-        tools:visibility="visible" />
+        tools:text="领取奖励" />
 
     <!-- 5. 时间文案 -->
     <TextView

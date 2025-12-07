@@ -1,23 +1,15 @@
 package com.example.dymessagelite.data.repository
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import com.example.dymessagelite.common.observer.EventType
 import com.example.dymessagelite.common.observer.Observer
 import com.example.dymessagelite.common.observer.Subject
 import com.example.dymessagelite.data.datasource.dao.MegDao
 import com.example.dymessagelite.data.datasource.database.ChatDatabase
-import com.example.dymessagelite.data.model.MegEntity
-import com.example.dymessagelite.data.model.MegItem
-import kotlinx.coroutines.CoroutineScope
+import com.example.dymessagelite.data.model.list.MegEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-import kotlin.concurrent.thread
-import kotlin.math.min
 
 
 class MegListRepository(
@@ -25,8 +17,12 @@ class MegListRepository(
 ) : Subject<List<MegEntity>> {
 
     private var observers: MutableList<Observer<List<MegEntity>>> = mutableListOf()
-
-
+    suspend fun getAllMeg(callback: (List<MegEntity>) -> Unit){
+        val megEntities: List<MegEntity> = megDao.getMegList(0,0)
+        withContext(Dispatchers.Main){
+            callback(megEntities)
+        }
+    }
     suspend fun fetchMeg(page: Int, pageSize: Int) {
         megDao.getMegList(0,0)
         ChatDatabase.isDatabaseCreated.first { isDatabaseCreated -> isDatabaseCreated}
@@ -38,10 +34,15 @@ class MegListRepository(
             }
         } else {
             withContext(Dispatchers.Main) {
-                notifyObservers(megEntities, EventType.LOAD_OR_GET_MESSAGE)
+                if(page == 1){
+                    notifyObservers(megEntities, EventType.FIRST_GET_MESSAGE)
+                }else{
+                    notifyObservers(megEntities, EventType.LOAD_MORE_MESSAGE)
+                }
             }
         }
     }
+
 
     suspend fun jumpDetail(senderId: String){
         val oldMeg = megDao.getMegBySenderId(senderId)
@@ -54,7 +55,6 @@ class MegListRepository(
             }
         };
     }
-
     override fun addObserver(observer: Observer<List<MegEntity>>) {
         observers.add(observer)
     }

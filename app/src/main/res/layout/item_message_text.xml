@@ -59,7 +59,6 @@
         android:maxLines="1"
         android:textColor="@android:color/darker_gray"
         android:textSize="14sp"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
         app:layout_constraintEnd_toStartOf="@id/tv_unread_badge"
         app:layout_constraintStart_toStartOf="@id/tv_nickname"

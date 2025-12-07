@@ -34,7 +34,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:id="@+id/chat_bar">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/iv_detail_avatar"
@@ -90,7 +91,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="发送"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_button_send"
                 android:layout_gravity="bottom"
+                app:backgroundTint="@null"
+                android:textSize="16sp"
                 android:padding="0dp"/>
         </LinearLayout>
 

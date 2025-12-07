@@ -1,14 +1,14 @@
 package com.example.dymessagelite.common
 
 import android.icu.util.Calendar
-import com.example.dymessagelite.data.model.ChatEntity
-import com.example.dymessagelite.data.model.MegDetailCell
-import com.example.dymessagelite.data.model.MegEntity
-import com.example.dymessagelite.data.model.MegItem
+import com.example.dymessagelite.data.model.detail.ChatEntity
+import com.example.dymessagelite.data.model.list.DisplayListItem
+import com.example.dymessagelite.data.model.detail.MegDetailCell
+import com.example.dymessagelite.data.model.list.MegEntity
+import com.example.dymessagelite.data.model.list.MegItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.text.format
 
 fun MegEntity.toMegItem(): MegItem {
     return MegItem(
@@ -17,7 +17,9 @@ fun MegEntity.toMegItem(): MegItem {
         name = name,
         summary = latestMessage,
         timestamp = formatTimestampToString(timestamp),
-        unreadCount = unreadCount
+        unreadCount = unreadCount,
+        type = type,
+        remark =remark
     )
 }
 fun ChatEntity.toMegDetailCell(): MegDetailCell {
@@ -25,7 +27,11 @@ fun ChatEntity.toMegDetailCell(): MegDetailCell {
         id = this.id,
         content = this.content,
         timestamp = this.timestamp.toString(),
-        isMine = this.isMine
+        isMine = this.isMine,
+        type = type,
+        isDisplay = isDisplay,
+        isClick = isClick,
+        isRead = isRead
     )
 }
 fun List<MegEntity>.toMegItems(): List<MegItem> {
@@ -38,15 +44,25 @@ fun List<ChatEntity>.toMegDetailCellList(): List<MegDetailCell> {
         it.toMegDetailCell()
     }
 }
-fun MegEntity.toChatEntity(isMine: Boolean): ChatEntity {
-    return ChatEntity(
-        content = this.latestMessage,
+
+fun MegItem.toDisplayListItem(type: Int): DisplayListItem{
+    return DisplayListItem(
+        id = this.id,
+        avatar = this.avatar,
+        name = this.name,
+        context = this.summary,
         timestamp = this.timestamp,
-        isMine = isMine,
-        senderId = this.name
+        contentType = this.type,
+        unreadCount = this.unreadCount,
+        displayType = type,
+        remark = remark
     )
 }
-
+fun List<MegItem>.toDisplayListItems(type: Int): List<DisplayListItem> {
+    return this.map {
+        it.toDisplayListItem(type)
+    }
+}
 private fun formatTimestampToString(timestamp: Long): String{
     val currentTime = System.currentTimeMillis()
     val targetTime = timestamp

@@ -16,22 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 2. 未读角标 -->
-    <!-- 一个红点，通过约束定位在头像的右上角 -->
-    <TextView
-        android:id="@+id/tv_unread_badge"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:background="@drawable/shape_unread_badge"
-        android:gravity="center"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@id/tv_summary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_summary"
-        tools:text="1"
-        tools:visibility="visible" />
 
     <!-- 3. 昵称 -->
     <TextView
@@ -51,7 +35,7 @@
 
     <!-- 4. 消息摘要 -->
     <TextView
-        android:id="@+id/tv_summary"
+        android:id="@+id/tv_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -59,45 +43,11 @@
         android:maxLines="1"
         android:textColor="@android:color/darker_gray"
         android:textSize="14sp"
-
         app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
         app:layout_constraintEnd_toStartOf="@id/tv_unread_badge"
         app:layout_constraintStart_toStartOf="@id/tv_nickname"
         app:layout_constraintTop_toBottomOf="@id/tv_nickname"
         tools:text="你收到了一个红包，请查收... " />
-<!--    &lt;!&ndash; 4.2 摘要 - 图片 &ndash;&gt;-->
-<!--    <com.google.android.material.imageview.ShapeableImageView-->
-<!--        android:id="@+id/iv_summary_image"-->
-<!--        android:layout_width="80dp"-->
-<!--        android:layout_height="80dp"-->
-<!--        android:layout_marginTop="4dp"-->
-<!--        android:scaleType="centerCrop"-->
-<!--        android:visibility="gone"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="@id/tv_nickname"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tv_nickname"-->
-<!--        app:shapeAppearanceOverlay="@style/ShapeAppearance.Image.Rounded"-->
-<!--        tools:src="@tools:sample/backgrounds/scenic"-->
-<!--        tools:visibility="gone" />-->
-<!--    &lt;!&ndash; 4.3 摘要 - 运营类按钮 &ndash;&gt;-->
-<!--    <Button-->
-<!--        android:id="@+id/btn_summary_action"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="4dp"-->
-<!--        android:background="@drawable/bg_meg_button"-->
-<!--        android:paddingStart="12dp"-->
-<!--        android:paddingTop="6dp"-->
-<!--        android:paddingEnd="12dp"-->
-<!--        android:paddingBottom="6dp"-->
-<!--        android:textColor="@android:color/white"-->
-<!--        android:textSize="18sp"-->
-<!--        android:visibility="gone"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="@id/tv_nickname"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/tv_nickname"-->
-<!--        tools:text="领取奖励"-->
-<!--        tools:visibility="visible" />-->
 
     <!-- 5. 时间文案 -->
     <TextView

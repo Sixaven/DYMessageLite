@@ -1,4 +1,4 @@
-package com.example.dymessagelite.data.model
+package com.example.dymessagelite.data.model.list
 
 data class MegItem(
     val id: String,
@@ -6,5 +6,7 @@ data class MegItem(
     val name: String,
     val summary: String,
     val timestamp: String,
-    var unreadCount: Int
+    var unreadCount: Int,
+    val type: Int,
+    var remark: String?
 )

@@ -4,7 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.dymessagelite.data.model.MegEntity
+import com.example.dymessagelite.data.model.list.MegEntity
+import com.example.dymessagelite.data.model.list.MegType
 
 @Dao
 interface MegDao {
@@ -16,4 +17,14 @@ interface MegDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateMeg(meg: MegEntity)
+    @Query("""
+        SELECT * FROM MegEntity 
+        WHERE name LIKE '%' || :keyword || '%'
+        AND type == ${MegType.TEXT}
+    """)
+    suspend fun searchMegsByName(keyword: String): List<MegEntity>?
+    @Query("select * from MegEntity")
+    suspend fun getAllMegs(): List<MegEntity>
+
+
 }
