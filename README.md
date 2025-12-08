@@ -13,13 +13,16 @@ https://github.com/Sixaven/DYMessageLite
 
 ### 功能1：消息列表的上拉加载和下拉刷新
 
-使用swiperefreshlayout实现上拉加载和下拉刷新，加载失败时会展示空态页面（和搜索列表复用空态页在这里暂不展示）
+使用swiperefreshlayout实现上拉加载和下拉刷新，加载失败时会展示空态页面（和搜索列表复用空态页在这里暂不展示），在加载时使用模拟分页的形式，每次加载20条数据，点击消息列表的头像可以直接跳转到备注页
 
 <img src="REDAME.assets/refresh_and_load.png" alt="img" style="zoom:33%;" />
 
 ### 功能2：消息对话
 
-在消息详情页用户自己也可以发送消息，不过目前暂时只能发送文本类消息，发送的消息都会被持久化，在输入法弹起以及新消息进入列表时，UI都会自动滑动到最底部，保证正常预览
+- 消息对话，在消息详情页用户自己也可以发送消息，这些消息都会被持久化
+- 且在软键盘唤醒起以及新消息进入列表时，UI都会自动滑动到最底部，保证正常预览，
+- 显示的消息类型有三种，都可以点击（用于计算CTR），当点击运营类消息时会直接跳转到备注页，点击其他消息会显示一个Toast提示
+- 点击最顶部的好友名称则会直接跳转到备注页
 
 <img src="REDAME.assets/chat.png" alt="img" style="zoom:33%;" />
 
@@ -27,7 +30,7 @@ https://github.com/Sixaven/DYMessageLite
 
 ### 功能3：本地消息分发中心
 
-消息列表顶部的开关控制消息分发的开始和关闭，每隔3s就产生一条新消息进入消息列表并实时刷新，同时消息cell的未读数、消息摘要、时间文案也会发生相应更新，分发中心支持纯文本、照片、按钮（运营类消息）三种消息体裁
+消息列表顶部的开关控制消息分发的开始和关闭，每隔3s就产生一条新消息进入消息列表并实时刷新，同时消息cell的未读数、消息摘要、时间文案也会发生相应更新，分发中心支持纯文本、照片、按钮（运营类消息）三种消息体裁，在消息列表类点击运营类消息可以直接跳转到备注页
 
 <img src="REDAME.assets/meg_send.jpg" alt="img" style="zoom:33%;" />
 
@@ -39,7 +42,7 @@ https://github.com/Sixaven/DYMessageLite
 
 ### 功能5：设置备注+数据看板
 
-点击消息列表的头像、消息列表中运营类消息的按钮以及消息详情页中的好友昵称都可以进入备注页，在备注页中可以设置当前好友的备注，还会显示当前好友所发消息的今日未读数，消息阅读的CTR、三类消息的召回率，在消息详情页的每一条cell都可以点击，同时相应的CTR也会发生变化
+点击消息列表的头像、消息列表中运营类消息的按钮以及消息详情页中的好友昵称都可以进入备注页，在备注页中可以设置当前好友的备注，还会显示当前好友所发消息的今日未读数，消息阅读的CTR、三类消息的召回率，在消息详情页的每一条cell都可以点击，同时相应的CTR也会发生变化，通过列表页直接进图备注页，和通过消息详情页进入备注页，消息的召回率也会有所不同
 
 - 设置备注
 
@@ -53,7 +56,7 @@ https://github.com/Sixaven/DYMessageLite
 
 *   **核心语言**: [Kotlin](https://kotlinlang.org/) - 项目完全使用 Kotlin 编写。
 *   **异步处理**: [Kotlin Coroutines](https://developer.android.com/kotlin/coroutines) - 用于处理后台任务，如数据库读写
-*   **架构组件 **:
+*   **架构组件**:
     *   **UI**: [View Binding](https://developer.android.com/topic/libraries/data-binding/view-binding) - 用于安全地访问视图，替代 `findViewById`。
     *   **列表**: [RecyclerView](https://developer.android.com/guide/topics/ui/layout/recyclerview) - 高效展示可滚动的消息列表。
     *   **刷新**: [SwipeRefreshLayout](https://developer.android.com/develop/ui/views/touch-and-input/swipe-to-refresh) - 实现下拉刷新和上拉加载功能。
