@@ -102,27 +102,7 @@ https://github.com/Sixaven/DYMessageLite
 
 ## 目录结构
 
-com.example.dymessagelitelite
-├── data //  Model 层
-│ ├── datasource // 数据服务
-│ │ ├── dao // 数据库访问对象 
-│ │ └── database // 数据库定义 
-│ │ 
-│ ├── model // 数据模型类
-│ └── repository // 仓库层 
-
-├── ui // 视图层 (View+Control)
-│ ├── main // 消息列表页
-│ ├── detail // 消息详情页
-│ └──dashborad//控制台（备注页）
-│
-└── common
-
-   ├── observer//自定义观察者模式
-   ├── tracker//应用状态工具
-   ├── utils  //json处理以及像素单位转换 
-   ├── mapper //视图模型的转换工具
-   └── tracker//应用状态工具
+![img](D:\Android\Project\DYMessageLite\REDAME.assets\jiagou.png)
 
 
 
