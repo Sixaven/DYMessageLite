@@ -102,7 +102,7 @@ https://github.com/Sixaven/DYMessageLite
 
 ## 目录结构
 
-![img](D:\Android\Project\DYMessageLite\REDAME.assets\jiagou.png)
+![img](REDAME.assets\jiagou.png)
 
 
 
