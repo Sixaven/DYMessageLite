@@ -20,7 +20,6 @@ interface MegDao {
     @Query("""
         SELECT * FROM MegEntity 
         WHERE name LIKE '%' || :keyword || '%'
-        AND type == ${MegType.TEXT}
     """)
     suspend fun searchMegsByName(keyword: String): List<MegEntity>?
     @Query("select * from MegEntity")
