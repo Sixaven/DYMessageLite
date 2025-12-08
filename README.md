@@ -102,7 +102,7 @@ https://github.com/Sixaven/DYMessageLite
 
 ## 目录结构
 
-![img](REDAME.assets\jiagou.png)
+<img src="REDAME.assets\jiagou.png" alt="img" style="zoom:67%;" />
 
 
 
