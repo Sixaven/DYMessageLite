@@ -36,7 +36,7 @@ class ChatRepository private constructor(
         }
     }
 
-    fun sendMeg(meg: ChatEntity,) {
+    fun sendMeg(meg: ChatEntity) {
         scope.launch {
             val oldMeg = megDao.getMegBySenderId(meg.senderId);
             oldMeg?.apply {
@@ -49,7 +49,7 @@ class ChatRepository private constructor(
                     timestamp = meg.timestamp,
                     unreadCount = oldMeg.unreadCount,
                     type = meg.type,
-                    remark = ""
+                    remark = oldMeg.remark
                 )
                 chatDao.insertChat(meg)
                 megDao.insertOrUpdateMeg(newMeg)

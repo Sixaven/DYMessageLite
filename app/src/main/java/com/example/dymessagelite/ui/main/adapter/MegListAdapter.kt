@@ -60,7 +60,6 @@ class MegListAdapter (
                 }
             }
         }
-
         fun bind(item: DisplayListItem) {
             binding.tvNickname.text = item.remark ?: item.name
             binding.tvSummary.text = item.context // 这是文本摘要
@@ -68,7 +67,6 @@ class MegListAdapter (
             updateBadge(binding.root, item.unreadCount) // 使用一个辅助方法来更新角标
         }
     }
-
     // 图片 ViewHolder
     inner class ImageViewHolder(val binding: ItemMessageImageBinding) : RecyclerView.ViewHolder(binding.root) {
         init {

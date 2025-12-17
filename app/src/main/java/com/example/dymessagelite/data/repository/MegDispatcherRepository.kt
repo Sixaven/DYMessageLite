@@ -80,6 +80,7 @@ class MegDispatcherRepository private constructor(
                     )
 
                     megDao.insertOrUpdateMeg(megEntity)
+
                     chatDao.insertChat(chatEntity)
 
                     val megDispatcherEvent = MegDispatcherEvent(megEntity,chatEntity)
